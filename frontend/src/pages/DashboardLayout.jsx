@@ -1,6 +1,7 @@
 import { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
+import Toast from '../components/Toast.jsx'
 import './css/DashboardLayout.css'
 
 const NAV_ITEMS = [
@@ -31,9 +32,20 @@ function Icon({ name }) {
 export default function DashboardLayout({ children, title }) {
   const { user, logout } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const location = useLocation()
+  const [toast, setToast] = useState(location.state?.toast || '')
 
   return (
     <div className="dash-shell">
+      <Toast
+        message={toast}
+        type="success"
+        onClose={() => {
+          setToast('')
+          window.history.replaceState({}, document.title)
+        }}
+      />
+
       {/* Overlay saat sidebar dibuka di mobile */}
       {mobileOpen && <div className="dash-overlay" onClick={() => setMobileOpen(false)} />}
 

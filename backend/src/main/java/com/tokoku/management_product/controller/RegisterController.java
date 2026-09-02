@@ -83,6 +83,5 @@ public class RegisterController {
                 savedUser.getUpdatedAt()
         );
     }
-    
 
 }

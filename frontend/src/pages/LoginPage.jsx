@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import axiosInstance from '../api/axiosInstance'
 import { useAuth } from '../context/useAuth'
 import './css/Auth.css'
 
-export default function LoginPage() {
+export default function AdminLoginPage() {
   const [form, setForm] = useState({ username: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -23,7 +23,7 @@ export default function LoginPage() {
     try {
       const res = await axiosInstance.post('/auth/admin/login', form)
       login(res.data)
-      navigate('/dashboard')
+      navigate('/dashboard', { state: { toast: 'Berhasil Login' } })
     } catch (err) {
       if (err.response) {
         setError(err.response.data?.message || 'Username atau password salah')
@@ -88,6 +88,11 @@ export default function LoginPage() {
               required
             />
           </div>
+
+        <div className="auth-field-row">
+          <span />
+          <Link to="/forgot-password" className="auth-forgot-link">Lupa password?</Link>
+        </div>
 
           <button type="submit" className="auth-submit" disabled={loading}>
             {loading ? 'Memproses...' : 'Masuk'}

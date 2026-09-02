@@ -1,15 +1,12 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import axiosInstance from '../api/axiosInstance'
-import { useAuth } from '../context/useAuth'
 import './css/Auth.css'
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ username: '', password: '', email: '' })
   const [error, setError] = useState('')
-  const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
-  const { login } = useAuth()
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -19,18 +16,13 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    setSuccess('')
     setLoading(true)
 
     try {
-      const res = await axiosInstance.post('/auth/register', form)
-      setSuccess('Registrasi berhasil! Silakan login untuk melanjutkan.')
-      setForm({ username: '', password: '', email: '' })
-      
-      // Redirect ke halaman login setelah 2 detik
-      setTimeout(() => {
-        navigate('/login')
-      }, 2000)
+      await axiosInstance.post('/auth/register', form)
+      // Registrasi berhasil -> arahkan ke halaman login (user biasa)
+      // dengan notifikasi, TANPA auto-login
+      navigate('/login', { state: { toast: 'Registrasi berhasil, silakan login' } })
     } catch (err) {
       if (err.response) {
         setError(err.response.data?.message || 'Registrasi gagal, periksa data yang kamu isi')
@@ -61,20 +53,6 @@ export default function RegisterPage() {
               type="button"
               className="auth-error-close"
               onClick={() => setError('')}
-              aria-label="Tutup notifikasi"
-            >
-              ×
-            </button>
-          </div>
-        )}
-
-        {success && (
-          <div className="auth-success" role="alert">
-            <span>{success}</span>
-            <button
-              type="button"
-              className="auth-success-close"
-              onClick={() => setSuccess('')}
               aria-label="Tutup notifikasi"
             >
               ×
