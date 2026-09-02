@@ -9,5 +9,7 @@ public class AuthenticationConstant {
     public static final String SECRET_KEY = "ini-rahasia-jangan-sampai-bocor-minimal-32-karakter";
     public static final long TOKEN_EXPARTION_MS = 1000 * 60 * 60 * 10;
     public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ACCESS_DENIED_NOT_ADMIN = "Akun ini bukan admin, akses ditolak";
     public static final String ROLE_USER = "USER";
+    public static final String ACCESS_DENIED_NOT_USER = "Akun ini bukan user, akses ditolak";
 }

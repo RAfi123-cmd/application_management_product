@@ -2,7 +2,6 @@ package com.tokoku.management_product.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,14 +11,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tokoku.management_product.constant.AuthenticationConstant;
 import com.tokoku.management_product.constant.LoginConstant;
-import com.tokoku.management_product.dto.LoginRequest;
-import com.tokoku.management_product.dto.LoginResponse;
-import com.tokoku.management_product.dto.RegisterResponse;
+import com.tokoku.management_product.dto.AdminLoginRequest;
+import com.tokoku.management_product.dto.AdminLoginResponse;
+import com.tokoku.management_product.dto.ForgotPasswordRequest;
+import com.tokoku.management_product.dto.UserLoginRequest;
+import com.tokoku.management_product.dto.UserLoginResponse;
+import com.tokoku.management_product.dto.excaption.AccessDeniedCustomException;
 import com.tokoku.management_product.persistence.entity.auth.User;
 import com.tokoku.management_product.persistence.repository.UserRepository;
 import com.tokoku.management_product.persistence.service.CustomUserDetailsService;
 import com.tokoku.management_product.security.JwtUtil;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(LoginConstant.BASE_AUTH_PATH)
@@ -40,21 +45,41 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @PostMapping(LoginConstant.LOGIN_PATH)
-    public LoginResponse login(@RequestBody LoginRequest request) {
-        try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
-        } catch (BadCredentialsException e) {
-            // TODO: handle exception
-            throw new RuntimeException(LoginConstant.LOGIN_FAILED);
+    @PostMapping(LoginConstant.ADMIN_LOGIN_PATH)
+    public AdminLoginResponse postMethodName(@Valid @RequestBody AdminLoginRequest entity) {
+        //TODO: process POST request
+        User user = authenticateAndGetUser(entity.getUsername(), entity.getPassword());
+
+        if (!AuthenticationConstant.ROLE_ADMIN.equalsIgnoreCase(user.getRole())) {
+            throw new AccessDeniedCustomException(AuthenticationConstant.ACCESS_DENIED_NOT_ADMIN);
         }
 
-        final UserDetails userDetails = userDetailsServices.loadUserByUsername(request.getUsername());
-        final String token = jwtUtil.generateToken(userDetails);
+        String token = generateToken(user);
+        return new AdminLoginResponse(
+            LoginConstant.LOGIN_SUCCESS,
+            user.getId(),
+            token,
+            user.getUsername(),
+            user.getPassword(),
+            user.getEmail(),
+            user.getRole(),
+            user.getCreatedAt(),
+            user.getUpdatedAt()
+        );
+    }
+    
 
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new RuntimeException(LoginConstant.USER_NOT_FOUND));
+    @PostMapping(LoginConstant.USER_LOGIN_PATH)
+    public UserLoginResponse login(@Valid @RequestBody UserLoginRequest request) {
+        User user = authenticateAndGetUser(request.getUsername(), request.getPassword());
 
-        return new LoginResponse(
+        if (!AuthenticationConstant.ROLE_USER.equalsIgnoreCase(user.getRole())) {
+            throw new AccessDeniedCustomException(AuthenticationConstant.ACCESS_DENIED_NOT_USER);
+        }
+        
+        String token = generateToken(user);
+
+        return new UserLoginResponse(
             LoginConstant.LOGIN_SUCCESS,
             user.getId(),
             token, 
@@ -66,36 +91,30 @@ public class AuthController {
             user.getUpdatedAt());
     }
 
-    @PostMapping(LoginConstant.REGISTER_PATH)
-    public RegisterResponse register(@RequestBody RegisterResponse request){
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new RuntimeException(LoginConstant.USERNAME_ALREADY_EXISTS);
-        }
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException(LoginConstant.EMAIL_ALREADY_EXISTS);
-        }
+    @PostMapping(LoginConstant.FORGOT_PASSWORD_PATH)
+    public String forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        //TODO: process POST request
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException(LoginConstant.EMAIL_FAILED));
+        return  LoginConstant.PASSWORD_RESET_SUCCESS;
+    }
 
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail(request.getEmail());
-        user.setRole("USER");
-
-        User savedUser = userRepository.save(user);
-
-        final UserDetails userDetails = userDetailsServices.loadUserByUsername(savedUser.getUsername());
-        final String token = jwtUtil.generateToken(userDetails);
+    @PostMapping(LoginConstant.LOGOUT_PATH)
+    public String Logout() {
+        //TODO: process POST request
         
-        return new RegisterResponse(
-            LoginConstant.REGISTER_SUCCESS,
-            savedUser.getId(),
-            token,
-            savedUser.getUsername(),
-            savedUser.getPassword(),
-            savedUser.getEmail(),
-            savedUser.getRole(),
-            savedUser.getCreatedAt(),
-            savedUser.getUpdatedAt()
-        );
+        return LoginConstant.LOGOUT_SUCCESS;
+    }
+    
+    
+
+    private User authenticateAndGetUser(String username, String password) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+        return userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException(LoginConstant.USER_NOT_FOUND));
+    }
+
+    private String generateToken(User user) {
+        final UserDetails userDetails = userDetailsServices.loadUserByUsername(user.getUsername());
+        return jwtUtil.generateToken(userDetails);
     }
 }
+    

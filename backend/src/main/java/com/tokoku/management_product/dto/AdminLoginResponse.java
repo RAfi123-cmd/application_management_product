@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class LoginResponse {
+public class AdminLoginResponse {
     private String message;
     private Long id;
     private String token;
@@ -16,5 +16,5 @@ public class LoginResponse {
     private String email;
     private String role;
     private LocalDateTime createdAt; 
-    private LocalDateTime updateAt; 
+    private LocalDateTime updatedAt; 
 }

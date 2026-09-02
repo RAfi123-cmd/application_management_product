@@ -1,0 +1,263 @@
+/* ==========================================================
+   DASHBOARD LAYOUT — sidebar kiri + konten
+   Senada dengan Auth.css: hijau tua + krem, Fraunces + Inter
+   ========================================================== */
+
+.dash-shell {
+  --ink: #16241f;
+  --paper: #f6f4ee;
+  --surface: #ffffff;
+  --primary: #1f6f54;
+  --primary-dark: #14503a;
+  --primary-soft: rgba(31, 111, 84, 0.12);
+  --line: #e4e0d3;
+  --muted: #6b7570;
+  --sidebar-bg: #14261f;
+  --sidebar-text: rgba(238, 247, 242, 0.72);
+  --sidebar-text-active: #eef7f2;
+
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Inter', system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+/* ---------- Sidebar ---------- */
+.dash-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--sidebar-bg);
+  color: var(--sidebar-text);
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.dash-sidebar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  margin-bottom: 32px;
+}
+
+.dash-brand {
+  font-family: 'Fraunces', serif;
+  font-size: 19px;
+  font-weight: 500;
+  color: var(--sidebar-text-active);
+}
+
+.dash-sidebar-close {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--sidebar-text-active);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.dash-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.dash-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dash-nav-link:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--sidebar-text-active);
+}
+
+.dash-nav-link.is-active {
+  background: var(--primary);
+  color: var(--sidebar-text-active);
+}
+
+.dash-sidebar-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+.dash-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  margin-bottom: 10px;
+}
+
+.dash-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--sidebar-text-active);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.dash-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dash-user-info strong {
+  font-size: 13.5px;
+  color: var(--sidebar-text-active);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-user-info span {
+  font-size: 12px;
+  color: var(--sidebar-text);
+  text-transform: capitalize;
+}
+
+.dash-logout {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  color: var(--sidebar-text);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.dash-logout:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--sidebar-text-active);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+/* ---------- Konten utama ---------- */
+.dash-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.dash-topbar h1 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  letter-spacing: -0.3px;
+  margin: 0;
+  color: var(--ink);
+}
+
+.dash-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--ink);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.dash-content {
+  flex: 1;
+  padding: 28px 32px 40px;
+  box-sizing: border-box;
+}
+
+.dash-overlay {
+  display: none;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .dash-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    z-index: 40;
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+
+  .dash-sidebar.is-open {
+    transform: translateX(0);
+    box-shadow: 20px 0 40px -20px rgba(0, 0, 0, 0.35);
+  }
+
+  .dash-sidebar-close {
+    display: inline-flex;
+  }
+
+  .dash-menu-toggle {
+    display: inline-flex;
+  }
+
+  .dash-overlay.is-open,
+  .dash-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 16, 13, 0.4);
+    z-index: 30;
+  }
+
+  .dash-topbar {
+    padding: 16px 20px;
+  }
+
+  .dash-content {
+    padding: 20px 20px 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .dash-sidebar {
+    width: 78vw;
+    max-width: 280px;
+  }
+
+  .dash-topbar h1 {
+    font-size: 19px;
+  }
+}
