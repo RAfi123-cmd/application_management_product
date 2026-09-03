@@ -10,7 +10,9 @@ public class LoginConstant {
     public static final String ADMIN_LOGIN_PATH = "/admin/login";
     public static final String USER_LOGIN_PATH = "/login";
     public static final String REGISTER_PATH = "/register";
+    public static final String EMAIL_VERIFICATION = "/check-email";
     public static final String FORGOT_PASSWORD_PATH = "/forgot-password";
+    public static final String RESET_PASSWORD_PATH = "/reset-password";
     public static final String LOGOUT_PATH = "/logout";
 
     public static final String LOGIN_SUCCESS = "Login Berhasil";
@@ -22,6 +24,10 @@ public class LoginConstant {
     public static final String EMAIL_FAILED = "Email anda salah";
     public static final String PASSWORD_RESET_SUCCESS = "Password berhasil direset";
     public static final String LOGOUT_SUCCESS = "Logout Berhasil";
+    public static final String EMAIL_NOT_FOUND = "Email tidak ditemukan";
+    public static final String EMAIL_VERIFIED = "Email ditemukan, silahkan lanjutkan untuk membuat password baru";
+    public static final String PASSWORD_MISSMATCH = "Konfirmasi password tidak cocok";
+    public static final String RESET_PASSWORD_SUCCESS = "Password berhasil diperbarui, silahkan login kembali";
 
     public static final String LOG_REGISTER_ATTEMPT = "Mencoba Register untuk username : {}";
     public static final String LOG_REGISTER_FAILED_USERNAME_EXISTS = "Registrasi gagal - username sudah dipakai: {}";

@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import axiosInstance from '../api/axiosInstance.js'
-import { useAuth } from '../context/useAuth.js'
+import axiosInstance from '../api/axiosInstance'
+import { useAuth } from '../context/useAuth'
 import Toast from '../components/Toast.jsx'
 import './css/Auth.css'
 
-export default function LoginPage() {
+export default function UserLoginPage() {
   const [form, setForm] = useState({ username: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)

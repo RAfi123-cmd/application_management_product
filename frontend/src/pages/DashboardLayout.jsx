@@ -5,7 +5,7 @@ import Toast from '../components/Toast.jsx'
 import './css/DashboardLayout.css'
 
 const NAV_ITEMS = [
-  { to: '/dashboard', label: 'Ringkasan', icon: 'grid' },
+  { to: '/dashboard', label: 'Dashboard', icon: 'grid' },
   { to: '/dashboard/produk', label: 'Produk', icon: 'box' },
   { to: '/dashboard/kategori', label: 'Kategori', icon: 'tag' },
   { to: '/dashboard/laporan', label: 'Laporan', icon: 'chart' },
@@ -29,7 +29,7 @@ function Icon({ name }) {
   )
 }
 
-export default function DashboardLayout({ children, title }) {
+export default function DashboardLayout({ children, title, navItems = NAV_ITEMS, brandLabel = 'Toko.ku' }) {
   const { user, logout } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
@@ -51,7 +51,7 @@ export default function DashboardLayout({ children, title }) {
 
       <aside className={`dash-sidebar ${mobileOpen ? 'is-open' : ''}`}>
         <div className="dash-sidebar-top">
-          <span className="dash-brand">Toko.ku</span>
+          <span className="dash-brand">{brandLabel}</span>
           <button
             className="dash-sidebar-close"
             onClick={() => setMobileOpen(false)}
@@ -62,7 +62,7 @@ export default function DashboardLayout({ children, title }) {
         </div>
 
         <nav className="dash-nav">
-          {NAV_ITEMS.map((item) => (
+          {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

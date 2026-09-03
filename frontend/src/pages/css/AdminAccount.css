@@ -1,0 +1,197 @@
+/* ==========================================================
+   ADMIN ACCOUNTS — halaman CRUD Pengguna & Admin
+   ========================================================== */
+
+.acc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.acc-subtitle {
+  color: #6b7570;
+  font-size: 14px;
+  margin: 0;
+}
+
+.acc-btn-primary {
+  background: #1f6f54;
+  color: #eef7f2;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.acc-btn-primary:hover {
+  background: #14503a;
+}
+
+.acc-btn-secondary {
+  background: #fff;
+  color: #16241f;
+  border: 1px solid #e4e0d3;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.acc-error {
+  background: #fdeeee;
+  color: #a13636;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  margin-bottom: 16px;
+}
+
+/* ---------- Tabel ---------- */
+.acc-table-wrap {
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #e4e0d3;
+  border-radius: 14px;
+}
+
+.acc-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.acc-table th,
+.acc-table td {
+  text-align: left;
+  padding: 12px 16px;
+  white-space: nowrap;
+}
+
+.acc-table thead th {
+  background: #f6f4ee;
+  color: #6b7570;
+  font-weight: 600;
+  font-size: 12.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  border-bottom: 1px solid #e4e0d3;
+}
+
+.acc-table tbody tr:not(:last-child) td {
+  border-bottom: 1px solid #efece0;
+}
+
+.acc-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.acc-badge-admin {
+  background: rgba(31, 111, 84, 0.14);
+  color: #14503a;
+}
+
+.acc-badge-user {
+  background: rgba(107, 117, 112, 0.14);
+  color: #4b544f;
+}
+
+.acc-btn-link {
+  background: none;
+  border: none;
+  color: #1f6f54;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.acc-btn-danger {
+  color: #a13636;
+}
+
+/* ---------- Modal ---------- */
+.acc-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 16, 13, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  padding: 20px;
+}
+
+.acc-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px;
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+.acc-modal h3 {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 20px;
+  margin: 0 0 20px;
+  color: #16241f;
+}
+
+.acc-field {
+  margin-bottom: 14px;
+  text-align: left;
+}
+
+.acc-field label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #16241f;
+  margin-bottom: 5px;
+}
+
+.acc-field input,
+.acc-field select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  border: 1px solid #e4e0d3;
+  border-radius: 8px;
+  outline: none;
+}
+
+.acc-field input:focus,
+.acc-field select:focus {
+  border-color: #1f6f54;
+  box-shadow: 0 0 0 3px rgba(31, 111, 84, 0.12);
+}
+
+.acc-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+@media (max-width: 480px) {
+  .acc-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

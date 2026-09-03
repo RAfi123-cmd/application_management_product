@@ -20,9 +20,6 @@ axiosInstance.interceptors.request.use((config) => {
   return config
 })
 
-// Interceptor: kalau token expired/invalid (401) SAAT MENGAKSES DATA,
-// otomatis logout & redirect. Tidak berlaku untuk endpoint login/register
-// itu sendiri, supaya pesan error "password salah" sempat tampil dulu.
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {

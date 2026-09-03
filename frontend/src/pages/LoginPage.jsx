@@ -1,15 +1,18 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import axiosInstance from '../api/axiosInstance'
 import { useAuth } from '../context/useAuth'
+import Toast from '../components/Toast.jsx'
 import './css/Auth.css'
 
-export default function AdminLoginPage() {
+export default function LoginPage() {
   const [form, setForm] = useState({ username: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const [toast, setToast] = useState(location.state?.toast || '')
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -23,7 +26,7 @@ export default function AdminLoginPage() {
     try {
       const res = await axiosInstance.post('/auth/admin/login', form)
       login(res.data)
-      navigate('/dashboard', { state: { toast: 'Berhasil Login' } })
+      navigate('/admin/dashboard', { state: { toast: 'Berhasil Login' } })
     } catch (err) {
       if (err.response) {
         setError(err.response.data?.message || 'Username atau password salah')
@@ -39,6 +42,15 @@ export default function AdminLoginPage() {
 
   return (
     <div className="auth-shell">
+      <Toast
+        message={toast}
+        type="success"
+        onClose={() => {
+          setToast('')
+          window.history.replaceState({}, document.title)
+        }}
+      />
+
       <div className="auth-card">
         <div className="auth-mark">Toko.ku Admin</div>
 
@@ -89,10 +101,10 @@ export default function AdminLoginPage() {
             />
           </div>
 
-        <div className="auth-field-row">
-          <span />
-          <Link to="/forgot-password" className="auth-forgot-link">Lupa password?</Link>
-        </div>
+          <div className="auth-field-row">
+            <span />
+            <Link to="/forgot-password?from=admin" className="auth-forgot-link">Lupa password?</Link>
+          </div>
 
           <button type="submit" className="auth-submit" disabled={loading}>
             {loading ? 'Memproses...' : 'Masuk'}

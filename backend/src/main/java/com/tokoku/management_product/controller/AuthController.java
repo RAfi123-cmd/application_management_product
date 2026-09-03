@@ -15,7 +15,8 @@ import com.tokoku.management_product.constant.AuthenticationConstant;
 import com.tokoku.management_product.constant.LoginConstant;
 import com.tokoku.management_product.dto.AdminLoginRequest;
 import com.tokoku.management_product.dto.AdminLoginResponse;
-import com.tokoku.management_product.dto.ForgotPasswordRequest;
+import com.tokoku.management_product.dto.NewPasswordRequest;
+import com.tokoku.management_product.dto.ResetPasswordRequest;
 import com.tokoku.management_product.dto.UserLoginRequest;
 import com.tokoku.management_product.dto.UserLoginResponse;
 import com.tokoku.management_product.dto.excaption.AccessDeniedCustomException;
@@ -92,20 +93,32 @@ public class AuthController {
     }
 
     @PostMapping(LoginConstant.FORGOT_PASSWORD_PATH)
-    public String forgotPassword(@RequestBody ForgotPasswordRequest request) {
+    public String resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         //TODO: process POST request
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException(LoginConstant.EMAIL_FAILED));
-        return  LoginConstant.PASSWORD_RESET_SUCCESS;
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException(LoginConstant.EMAIL_FAILED));
+        return LoginConstant.PASSWORD_RESET_SUCCESS;
+    }
+
+    @PostMapping(LoginConstant.RESET_PASSWORD_PATH)
+    public String updatePassword(@Valid @RequestBody NewPasswordRequest request) {
+        //TODO: process POST request
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new RuntimeException(LoginConstant.PASSWORD_MISSMATCH);
+        }
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException(LoginConstant.EMAIL_NOT_FOUND));
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        return LoginConstant.RESET_PASSWORD_SUCCESS;
     }
 
     @PostMapping(LoginConstant.LOGOUT_PATH)
     public String Logout() {
         //TODO: process POST request
-        
         return LoginConstant.LOGOUT_SUCCESS;
     }
-    
-    
 
     private User authenticateAndGetUser(String username, String password) {
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
