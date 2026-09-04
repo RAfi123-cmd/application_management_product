@@ -14,6 +14,7 @@ import com.tokoku.management_product.constant.UserManagementConstant;
 import com.tokoku.management_product.dto.CreateUserAccountRequest;
 import com.tokoku.management_product.dto.UpdateUserAccountRequest;
 import com.tokoku.management_product.dto.UserAccountResponse;
+import com.tokoku.management_product.dto.UserStatsResponse;
 import com.tokoku.management_product.dto.excaption.DataAlreadyExistException;
 import com.tokoku.management_product.dto.excaption.DataNotFoundException;
 import com.tokoku.management_product.persistence.entity.auth.User;
@@ -50,14 +51,14 @@ public class UserManagementController {
         return users.stream().map(this::toResponse).collect(Collectors.toList());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(UserManagementConstant.VIEW)
     public UserAccountResponse getById(@PathVariable Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException(UserManagementConstant.USER_NOT_FOUND));
         return toResponse(user);
     }
 
-    @PostMapping
+    @PostMapping(UserManagementConstant.ADD)
     public UserAccountResponse create(@Valid @RequestBody CreateUserAccountRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new DataAlreadyExistException("Username sudah dipakai");
@@ -75,7 +76,7 @@ public class UserManagementController {
         return toResponse(userRepository.save(user));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(UserManagementConstant.EDIT)
     public UserAccountResponse update(@PathVariable Long id, @Valid @RequestBody UpdateUserAccountRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException(UserManagementConstant.USER_NOT_FOUND));
@@ -91,7 +92,7 @@ public class UserManagementController {
         return toResponse(userRepository.save(user));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping(UserManagementConstant.DELETE)
     public String delete(@PathVariable Long id, Authentication authentication) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException(UserManagementConstant.USER_NOT_FOUND));
@@ -115,5 +116,13 @@ public class UserManagementController {
                 user.getUpdatedAt()
         );
     }
+
+    @GetMapping(UserManagementConstant.STATS_PATH)
+    public UserStatsResponse getStats() {
+        long totalUsers = userRepository.findAll().stream().filter(u -> "USER".equalsIgnoreCase(u.getRole())).count();
+        long totalAdmin = userRepository.findAll().stream().filter(u -> "ADMIN".equalsIgnoreCase(u.getRole())).count();
+        return new UserStatsResponse(totalUsers, totalAdmin);
+    }
+    
     
 }
