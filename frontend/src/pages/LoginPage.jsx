@@ -12,7 +12,19 @@ export default function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [toast, setToast] = useState(location.state?.toast || '')
+
+  const [toast, setToast] = useState(() => {
+    const stateToast = location.state?.toast
+    if (stateToast) return stateToast
+
+    const storedToast = sessionStorage.getItem('post-logout-toast')
+    if (storedToast) {
+      sessionStorage.removeItem('post-logout-toast')
+      return storedToast
+    }
+
+    return ''
+  })
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })

@@ -5,7 +5,7 @@ import Toast from '../components/Toast.jsx'
 import './css/DashboardLayout.css'
 
 const NAV_ITEMS = [
-  { to: '/dashboard', label: 'Dashboard', icon: 'grid' },
+  { to: '/dashboard', label: 'Dashboard', icon: 'grid', end: true },
   { to: '/dashboard/produk', label: 'Produk', icon: 'box' },
   { to: '/dashboard/kategori', label: 'Kategori', icon: 'tag' },
   { to: '/dashboard/laporan', label: 'Laporan', icon: 'chart' },
@@ -20,20 +20,46 @@ function Icon({ name }) {
     logout: 'M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4m7 14 5-5-5-5m5 5H9',
     menu: 'M4 6h16M4 12h16M4 18h16',
     close: 'M6 6l12 12M18 6 6 18',
+    chevron: 'm6 9 6 6 6-6',
   }
 
   return (
-    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      width="19"
+      height="19"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d={paths[name]} />
     </svg>
   )
 }
 
-export default function DashboardLayout({ children, title, navItems = NAV_ITEMS, brandLabel = 'Toko.ku' }) {
+export default function DashboardLayout({
+  children,
+  title,
+  navItems = NAV_ITEMS,
+  brandLabel = 'Toko.ku',
+}) {
   const { user, logout } = useAuth()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [profileOpen, setProfileOpen] = useState(false)
+
   const location = useLocation()
   const [toast, setToast] = useState(location.state?.toast || '')
+
+  const handleLogout = () => {
+    // Simpan pesan toast ke sessionStorage, BUKAN lewat navigate state.
+    // Ini supaya toast tetap muncul walau yang men-trigger redirect
+    // ke halaman login akhirnya adalah ProtectedRoute (karena user jadi
+    // null), bukan panggilan navigate() di bawah ini.
+    sessionStorage.setItem('post-logout-toast', 'Berhasil logout')
+    logout()
+  }
 
   return (
     <div className="dash-shell">
@@ -46,12 +72,17 @@ export default function DashboardLayout({ children, title, navItems = NAV_ITEMS,
         }}
       />
 
-      {/* Overlay saat sidebar dibuka di mobile */}
-      {mobileOpen && <div className="dash-overlay" onClick={() => setMobileOpen(false)} />}
+      {mobileOpen && (
+        <div
+          className="dash-overlay"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
 
       <aside className={`dash-sidebar ${mobileOpen ? 'is-open' : ''}`}>
         <div className="dash-sidebar-top">
           <span className="dash-brand">{brandLabel}</span>
+
           <button
             className="dash-sidebar-close"
             onClick={() => setMobileOpen(false)}
@@ -66,8 +97,10 @@ export default function DashboardLayout({ children, title, navItems = NAV_ITEMS,
             <NavLink
               key={item.to}
               to={item.to}
-              end={item.to === '/dashboard'}
-              className={({ isActive }) => `dash-nav-link ${isActive ? 'is-active' : ''}`}
+              end={item.end ?? false}
+              className={({ isActive }) =>
+                `dash-nav-link ${isActive ? 'is-active' : ''}`
+              }
               onClick={() => setMobileOpen(false)}
             >
               <Icon name={item.icon} />
@@ -75,20 +108,6 @@ export default function DashboardLayout({ children, title, navItems = NAV_ITEMS,
             </NavLink>
           ))}
         </nav>
-
-        <div className="dash-sidebar-bottom">
-          <div className="dash-user">
-            <div className="dash-user-avatar">{user?.username?.[0]?.toUpperCase() || '?'}</div>
-            <div className="dash-user-info">
-              <strong>{user?.username}</strong>
-              <span>{user?.role}</span>
-            </div>
-          </div>
-          <button className="dash-logout" onClick={logout}>
-            <Icon name="logout" />
-            <span>Keluar</span>
-          </button>
-        </div>
       </aside>
 
       <div className="dash-main">
@@ -100,10 +119,57 @@ export default function DashboardLayout({ children, title, navItems = NAV_ITEMS,
           >
             <Icon name="menu" />
           </button>
+
           <h1>{title}</h1>
+
+          {/* PROFILE DROPDOWN */}
+          <div className="dash-profile">
+            <button
+              className="dash-profile-trigger"
+              onClick={() => setProfileOpen((prev) => !prev)}
+              aria-expanded={profileOpen}
+            >
+              <div className="dash-user-avatar">
+                {user?.username?.[0]?.toUpperCase() || '?'}
+              </div>
+
+              <div className="dash-profile-name">
+                <strong>{user?.username || 'User'}</strong>
+              </div>
+
+              <Icon name="chevron" />
+            </button>
+
+            {profileOpen && (
+              <div className="dash-profile-dropdown">
+                <div className="dash-profile-header">
+                  <div className="dash-user-avatar dash-profile-avatar">
+                    {user?.username?.[0]?.toUpperCase() || '?'}
+                  </div>
+
+                  <div>
+                    <strong>{user?.username || 'User'}</strong>
+                    <span>{user?.role || '-'}</span>
+                  </div>
+                </div>
+
+                <div className="dash-profile-divider" />
+
+                <button
+                  className="dash-logout-dropdown"
+                  onClick={handleLogout}
+                >
+                  <Icon name="logout" />
+                  <span>Keluar</span>
+                </button>
+              </div>
+            )}
+          </div>
         </header>
 
-        <main className="dash-content">{children}</main>
+        <main className="dash-content">
+          {children}
+        </main>
       </div>
     </div>
   )

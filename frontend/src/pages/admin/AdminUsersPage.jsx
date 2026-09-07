@@ -1,5 +1,5 @@
-import AdminAccountsPage from "./AdminAccountPage";
+import UserAccountsPage from "./UserAccountPage";
 
 export default function AdminUsersPage() {
-  return <AdminAccountsPage role="USER" title="Pengguna" />
+  return <UserAccountsPage role="USER" title="Pengguna" />
 }

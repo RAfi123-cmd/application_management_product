@@ -13,9 +13,7 @@ const EMPTY_FORM = {
   role: 'USER',
 }
 
-export default function AdminAccountsPage({ role, title }) {
-  const isAdmin = role === 'ADMIN'
-
+export default function UserAccountPage({ role, title }) {
   const [accounts, setAccounts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -124,53 +122,31 @@ export default function AdminAccountsPage({ role, title }) {
 
     try {
       if (editingId !== null) {
-        const payload = isAdmin
-          ? {
-              username: form.username,
-              email: form.email,
-            }
-          : {
-              username: form.username,
-              email: form.email,
-              role: form.role,
-            }
+        const payload = {
+          username: form.username,
+          email: form.email,
+          role: form.role,
+        }
 
         if (form.password.trim()) {
           payload.password = form.password
         }
 
-        const editUrl = isAdmin
-          ? `/admin/users/admin/edit/${editingId}`
-          : `/admin/users/edit/${editingId}`
-
-        const response = await axiosInstance.put(editUrl, payload)
-
-        showToast(
-          response.data?.message || 'Berhasil memperbarui akun',
+        await axiosInstance.put(
+          `/admin/users/edit/${editingId}`,
+          payload,
         )
+
+        showToast('Berhasil memperbarui akun')
       } else {
-        const payload = isAdmin
-          ? {
-              username: form.username,
-              email: form.email,
-              password: form.password,
-            }
-          : {
-              username: form.username,
-              email: form.email,
-              password: form.password,
-              role: form.role,
-            }
+        await axiosInstance.post('/admin/users/add', {
+          username: form.username,
+          email: form.email,
+          password: form.password,
+          role: form.role,
+        })
 
-        const addUrl = isAdmin
-          ? '/admin/users/admin/add'
-          : '/admin/users/add'
-
-        const response = await axiosInstance.post(addUrl, payload)
-
-        showToast(
-          response.data?.message || 'Berhasil menambahkan akun',
-        )
+        showToast('Berhasil menambahkan akun')
       }
 
       closeForm()
@@ -195,13 +171,11 @@ export default function AdminAccountsPage({ role, title }) {
     setDeletingId(account.id)
 
     try {
-      const deleteUrl = isAdmin
-        ? `/admin/users/admin/delete/${account.id}`
-        : `/admin/users/delete/${account.id}`
+      await axiosInstance.delete(
+        `/admin/users/delete/${account.id}`,
+      )
 
-      const response = await axiosInstance.delete(deleteUrl)
-
-      showToast(response.data?.message || 'Berhasil menghapus akun')
+      showToast('Berhasil menghapus akun')
       await loadAccounts()
     } catch (err) {
       if (err.response?.status === 403) {
@@ -226,10 +200,10 @@ export default function AdminAccountsPage({ role, title }) {
     >
       <div className="acc-header">
         <div className="acc-header-text">
-          <h2>Data {title}</h2>
+          <h2>Data Pengguna</h2>
           <p>
             Kelola akun dengan role{' '}
-            {role === 'ADMIN' ? 'Admin' : 'Pengguna'}.
+            {role === 'ADMIN' ? 'Admin' : 'user'}.
           </p>
         </div>
 

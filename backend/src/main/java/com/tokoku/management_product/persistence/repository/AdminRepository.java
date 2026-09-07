@@ -7,13 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tokoku.management_product.persistence.entity.auth.User;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface AdminRepository extends  JpaRepository<User, Long>{
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
 
-    boolean existsByUsername(String username);
-    boolean existsByEmail(String email);
-    List<User> findByRoleIgnoreCase(String role);
- 
-    long countByRoleIgnoreCase(String role);
+    
 }

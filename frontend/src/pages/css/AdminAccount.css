@@ -195,3 +195,24 @@
     align-items: flex-start;
   }
 }
+.acc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px; /* sesuaikan spacing sebelum tabel */
+}
+
+.acc-header-text h2 {
+  margin: 0 0 4px 0;
+}
+
+.acc-header-text p {
+  margin: 0;
+}
+
+.acc-field input:disabled {
+  background: #f5f5f5;
+  color: #333;
+  cursor: default;
+}

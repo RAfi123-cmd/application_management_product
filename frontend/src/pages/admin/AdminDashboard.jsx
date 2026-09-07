@@ -2,7 +2,7 @@ import DashboardLayout from "../DashboardLayout"
 import AdminStats from "../AdminStats"
 
 export const ADMIN_NAV_ITEMS = [
-  { to: '/admin/dashboard', label: 'Dashboard', icon: 'grid' },
+  { to: '/admin/dashboard', label: 'Dashboard', icon: 'grid', end: true },
   { to: '/admin/dashboard/pengguna', label: 'Pengguna', icon: 'box' },
   { to: '/admin/dashboard/admin', label: 'Data Admin', icon: 'box' },
 ]

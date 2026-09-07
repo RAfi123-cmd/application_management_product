@@ -20,13 +20,25 @@ public class UserManagementConstant {
     public static final String UPDATE = "/update";
     public static final String DELETE = "/delete/{id}";
 
+    public static final String ADMIN_VIEW = "/admin/{id}";
+    public static final String ADMIN_ADD = "/admin/add";
+    public static final String ADMIN_EDIT = "/admin/edit/{id}";
+    public static final String ADMIN_UPDATE = "/admin/update";
+    public static final String ADMIN_DELETE = "/admin/delete/{id}";
+
+
+
     // Operations Product User
     public static final String VIEW_PRODUCT_USER = "/api/user/product";
 
 
-    public static final String USER_CREATED = "Akun berhasil dibuat";
-    public static final String USER_UPDATED = "Akun berhasil diperbarui";
-    public static final String USER_DELETED = "Akun berhasil dihapus";
+    public static final String USER_CREATED = "Akun User berhasil dibuat";
+    public static final String USER_UPDATED = "Akun User berhasil diperbarui";
+    public static final String USER_DELETED = "Akun User berhasil dihapus";
+
+    public static final String ADMIN_CREATED = "Akun Admin berhasil dibuat";
+    public static final String ADMIN_UPDATED = "Akun Admin berhasil diperbarui";
+    public static final String ADMIN_DELETED = "Akun Admin berhasil dihapus";
     public static final String USER_NOT_FOUND = "Akun tidak ditemukan";
     public static final String CANNOT_DELETE_SELF = "Tidak bisa menghapus akun sendiri";
 }

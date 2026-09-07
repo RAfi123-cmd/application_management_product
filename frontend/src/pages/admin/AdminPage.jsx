@@ -1,4 +1,4 @@
-import AdminAccountsPage from '../admin/AdminPage.jsx'
+import AdminAccountsPage from "./AdminAccountPage"
 
 export default function AdminPage() {
   return <AdminAccountsPage role="ADMIN" title="Admin" />

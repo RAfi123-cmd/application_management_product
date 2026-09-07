@@ -6,8 +6,8 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import UserDashboard from './pages/user/UserDashboard.jsx'
 // import UserProductsPage from './pages/UserProductsPage.jsx'
 import AdminDashboard from './pages/admin/AdminDashboard.jsx'
-import AdminUsersPage from './pages/admin/AdminUsersPage.jsx'
-import AdminPage from './pages/admin/AdminPage.jsx'
+import UserAccountPage from './pages/admin/UserAccountPage.jsx'
+import AdminAccountsPage from './pages/admin/AdminAccountPage.jsx'
 import UserLoginPage from './pages/UserLoginpage.jsx'
 
 export default function App() {
@@ -50,7 +50,7 @@ export default function App() {
         path="/admin/dashboard/pengguna"
         element={
           <ProtectedRoute role="ADMIN">
-            <AdminUsersPage />
+            <UserAccountPage role="USER" title="User" />
           </ProtectedRoute>
         }
       />
@@ -58,7 +58,7 @@ export default function App() {
         path="/admin/dashboard/admin"
         element={
           <ProtectedRoute role="ADMIN">
-            <AdminPage />
+            <AdminAccountsPage role="ADMIN" title="Admin" />
           </ProtectedRoute>
         }
       />
