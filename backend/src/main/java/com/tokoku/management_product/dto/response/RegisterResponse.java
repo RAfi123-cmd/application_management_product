@@ -1,4 +1,4 @@
-package com.tokoku.management_product.dto;
+package com.tokoku.management_product.dto.response;
 
 import java.time.LocalDateTime;
 
@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class UserLoginResponse {
+public class RegisterResponse {
     private String message;
     private Long id;
     private String token;

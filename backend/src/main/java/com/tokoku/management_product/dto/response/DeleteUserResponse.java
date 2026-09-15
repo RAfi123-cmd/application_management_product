@@ -1,4 +1,4 @@
-package com.tokoku.management_product.dto;
+package com.tokoku.management_product.dto.response;
 
 public class DeleteUserResponse {
     private String message;

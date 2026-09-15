@@ -1,6 +1,5 @@
 package com.tokoku.management_product.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,13 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tokoku.management_product.constant.AuthenticationConstant;
 import com.tokoku.management_product.constant.LoginConstant;
-import com.tokoku.management_product.dto.AdminLoginRequest;
-import com.tokoku.management_product.dto.AdminLoginResponse;
-import com.tokoku.management_product.dto.NewPasswordRequest;
-import com.tokoku.management_product.dto.ResetPasswordRequest;
-import com.tokoku.management_product.dto.UserLoginRequest;
-import com.tokoku.management_product.dto.UserLoginResponse;
 import com.tokoku.management_product.dto.excaption.AccessDeniedCustomException;
+import com.tokoku.management_product.dto.request.AdminLoginRequest;
+import com.tokoku.management_product.dto.request.NewPasswordRequest;
+import com.tokoku.management_product.dto.request.ResetPasswordRequest;
+import com.tokoku.management_product.dto.request.UserLoginRequest;
+import com.tokoku.management_product.dto.response.AdminLoginResponse;
+import com.tokoku.management_product.dto.response.UserLoginResponse;
 import com.tokoku.management_product.persistence.entity.auth.User;
 import com.tokoku.management_product.persistence.repository.UserRepository;
 import com.tokoku.management_product.persistence.service.CustomUserDetailsService;
@@ -31,20 +30,27 @@ import jakarta.validation.Valid;
 @RequestMapping(LoginConstant.BASE_AUTH_PATH)
 @CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
-    @Autowired
+
+
     private AuthenticationManager authenticationManager;
 
-    @Autowired
     private CustomUserDetailsService userDetailsServices;
 
-    @Autowired
     private JwtUtil jwtUtil;
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public AuthController(AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsServices,
+            JwtUtil jwtUtil, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.authenticationManager = authenticationManager;
+        this.userDetailsServices = userDetailsServices;
+        this.jwtUtil = jwtUtil;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
 
     @PostMapping(LoginConstant.ADMIN_LOGIN_PATH)
     public AdminLoginResponse postMethodName(@Valid @RequestBody AdminLoginRequest entity) {

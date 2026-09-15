@@ -21,7 +21,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.tokoku.management_product.dto.JwtRequestFilter;
+import com.tokoku.management_product.dto.request.JwtRequestFilter;
 import com.tokoku.management_product.persistence.service.CustomUserDetailsService;
 
 @Configuration

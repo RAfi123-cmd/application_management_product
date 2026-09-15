@@ -1,4 +1,4 @@
-package com.tokoku.management_product.dto;
+package com.tokoku.management_product.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

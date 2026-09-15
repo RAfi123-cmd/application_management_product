@@ -3,28 +3,29 @@ package com.tokoku.management_product.controller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.core.Authentication;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.tokoku.management_product.constant.UserManagementConstant;
-import com.tokoku.management_product.dto.CreateUserAccountRequest;
-import com.tokoku.management_product.dto.DeleteUserResponse;
-import com.tokoku.management_product.dto.UpdateUserAccountRequest;
-import com.tokoku.management_product.dto.UserAccountResponse;
-import com.tokoku.management_product.dto.UserStatsResponse;
 import com.tokoku.management_product.dto.excaption.DataAlreadyExistException;
 import com.tokoku.management_product.dto.excaption.DataNotFoundException;
 import com.tokoku.management_product.dto.request.CreateAdminAccountRequest;
+import com.tokoku.management_product.dto.request.CreateUserAccountRequest;
 import com.tokoku.management_product.dto.request.UpdateAdminAccountRequest;
+import com.tokoku.management_product.dto.request.UpdateUserAccountRequest;
 import com.tokoku.management_product.dto.response.AdminAccountResponse;
 import com.tokoku.management_product.dto.response.DeleteAdminAccountResponse;
+import com.tokoku.management_product.dto.response.DeleteUserResponse;
+import com.tokoku.management_product.dto.response.UserAccountResponse;
+import com.tokoku.management_product.dto.response.UserStatsResponse;
 import com.tokoku.management_product.persistence.entity.auth.User;
-import com.tokoku.management_product.persistence.repository.AdminRepository;
 import com.tokoku.management_product.persistence.repository.UserRepository;
+
 
 import jakarta.validation.Valid;
 
@@ -42,11 +43,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class UserManagementController {
     private static final String ROLE_ADMIN = "ADMIN";
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private PasswordEncoder passwordEncoder;
+
+    public UserManagementController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
 
     @GetMapping
     public List<UserAccountResponse> getAllByRole(@RequestParam(required = false) String role) {
@@ -58,22 +63,34 @@ public class UserManagementController {
 
         return users.stream().map(this::toResponse).collect(Collectors.toList());
     }
+    
 
     @GetMapping(UserManagementConstant.VIEW)
     public UserAccountResponse getById(@PathVariable Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException(UserManagementConstant.USER_NOT_FOUND));
+        User user = findUserOrThrow(id);
         return toResponse(user);
     }
 
+    @GetMapping(UserManagementConstant.ALL_ADMIN)
+    public List<AdminAccountResponse> getAllAdmin() {
+        return userRepository.findAll().stream()
+                .filter(user -> ROLE_ADMIN.equalsIgnoreCase(user.getRole()))
+                .map(this::toAdminResponse)
+                .collect(Collectors.toList());
+    }
+
+    @GetMapping(UserManagementConstant.ALL_USER)
+    public List<UserAccountResponse> getAllUser() {
+        return userRepository.findAll().stream()
+                .filter(user -> "USER".equalsIgnoreCase(user.getRole()))
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
+
     @PostMapping(UserManagementConstant.ADD)
     public UserAccountResponse create(@Valid @RequestBody CreateUserAccountRequest request) {
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
-            throw new DataAlreadyExistException("Username sudah dipakai");
-        }
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new DataAlreadyExistException("Email sudah terdaftar");
-        }
+        ensureUsernameAndEmailAvailable(request.getUsername(), request.getEmail());
 
         User user = new User();
         user.setUsername(request.getUsername());
@@ -86,29 +103,21 @@ public class UserManagementController {
 
     @PutMapping(UserManagementConstant.EDIT)
     public UserAccountResponse update(@PathVariable Long id, @Valid @RequestBody UpdateUserAccountRequest request) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException(UserManagementConstant.USER_NOT_FOUND));
+        User user = findUserOrThrow(id);
+        ensureUsernameAndEmailAvailableForUpdate(user, request.getUsername(), request.getEmail());
 
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setRole(request.getRole().toUpperCase());
-
-        if (request.getPassword() != null && !request.getPassword().isBlank()) {
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
+        applyPasswordIfPresent(user, request.getPassword());
 
         return toResponse(userRepository.save(user));
     }
 
     @DeleteMapping(UserManagementConstant.DELETE)
     public DeleteUserResponse delete(@PathVariable Long id, Authentication authentication) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException(UserManagementConstant.USER_NOT_FOUND));
-
-        // Cegah admin menghapus akunnya sendiri
-        if (authentication.getName().equalsIgnoreCase(user.getUsername())) {
-            throw new RuntimeException(UserManagementConstant.CANNOT_DELETE_SELF);
-        }
+        User user = findUserOrThrow(id);
+        ensureNotDeletingSelf(authentication, user);
 
         UserAccountResponse deletedUser = toResponse(user);
         userRepository.delete(user);
@@ -136,8 +145,8 @@ public class UserManagementController {
 
     @PostMapping(UserManagementConstant.ADMIN_ADD)
     public AdminAccountResponse createAdmin(@Valid @RequestBody CreateAdminAccountRequest request) {
-        //TODO: process POST request
         ensureUsernameAndEmailAvailable(request.getUsername(), request.getEmail());
+
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
@@ -148,15 +157,15 @@ public class UserManagementController {
 
     @PutMapping(UserManagementConstant.ADMIN_EDIT)
     public AdminAccountResponse adminUpdate(@PathVariable Long id, @Valid @RequestBody UpdateAdminAccountRequest request) {
-        //TODO: process PUT request
         User user = findUserOrThrow(id);
         ensureUserHasRole(user, ROLE_ADMIN);
+        ensureUsernameAndEmailAvailableForUpdate(user, request.getUsername(), request.getEmail());
 
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
         user.setRole(ROLE_ADMIN);
         applyPasswordIfPresent(user, request.getPassword());
-        
+
         return toAdminResponse(userRepository.save(user));
     }
 
@@ -171,8 +180,8 @@ public class UserManagementController {
 
         return new DeleteAdminAccountResponse(UserManagementConstant.ADMIN_DELETED, deleteAdmin);
     }
-    
-    
+
+
     @GetMapping(UserManagementConstant.STATS_PATH)
     public UserStatsResponse getStats() {
         long totalUsers = userRepository.findAll().stream().filter(u -> "USER".equalsIgnoreCase(u.getRole())).count();
@@ -191,6 +200,23 @@ public class UserManagementController {
         if (userRepository.existsByEmail(email)) {
             throw new DataAlreadyExistException("Email sudah terdaftar");
         }
+    }
+
+    // Sama seperti ensureUsernameAndEmailAvailable, tapi untuk update:
+    // akun yang sedang diedit sendiri tidak boleh dianggap "bentrok"
+    // hanya karena username/email-nya tidak berubah.
+    private void ensureUsernameAndEmailAvailableForUpdate(User currentUser, String username, String email) {
+        userRepository.findByUsername(username).ifPresent(existing -> {
+            if (!existing.getId().equals(currentUser.getId())) {
+                throw new DataAlreadyExistException("Username sudah dipakai");
+            }
+        });
+
+        userRepository.findByEmail(email).ifPresent(existing -> {
+            if (!existing.getId().equals(currentUser.getId())) {
+                throw new DataAlreadyExistException("Email sudah terdaftar");
+            }
+        });
     }
 
     private void applyPasswordIfPresent(User user, String rawPassword){

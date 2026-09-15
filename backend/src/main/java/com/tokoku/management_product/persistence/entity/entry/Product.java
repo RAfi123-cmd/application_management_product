@@ -19,15 +19,16 @@ public class Product {
     private String kategori;
     private double harga;
     private Integer stok;
-    private String deksripsi;
+    private String deskripsi;
 
+    protected  Product(){}
     
-    public Product(String name, String kategori, double harga, Integer stok, String deksripsi) {
+    public Product(String name, String kategori, double harga, Integer stok, String deskripsi) {
         this.name = name;
         this.kategori = kategori;
         this.harga = harga;
         this.stok = stok;
-        this.deksripsi = deksripsi;
+        this.deskripsi = deskripsi;
     }
     public Long getId() {
         return id;
@@ -59,10 +60,12 @@ public class Product {
     public void setStok(Integer stok) {
         this.stok = stok;
     }
-    public String getDeksripsi() {
-        return deksripsi;
+
+    public String getDeskripsi() {
+        return deskripsi;
     }
-    public void setDeksripsi(String deksripsi) {
-        this.deksripsi = deksripsi;
+
+    public void setDeskripsi(String deskripsi) {
+        this.deskripsi = deskripsi;
     }
 }

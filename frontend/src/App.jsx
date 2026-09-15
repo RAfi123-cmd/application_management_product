@@ -4,11 +4,12 @@ import RegisterPage from './pages/RegisterPage.jsx'
 import ForgotPasswordPage from './pages/ForgotPasswordPage.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import UserDashboard from './pages/user/UserDashboard.jsx'
-// import UserProductsPage from './pages/UserProductsPage.jsx'
-import AdminDashboard from './pages/admin/AdminDashboard.jsx'
 import UserAccountPage from './pages/admin/UserAccountPage.jsx'
 import AdminAccountsPage from './pages/admin/AdminAccountPage.jsx'
 import UserLoginPage from './pages/UserLoginpage.jsx'
+import ProductPage from './pages/admin/ProductPage.jsx'
+import DashboardLayout from './pages/DashboardLayout.jsx'
+import AdminDashboard, { ADMIN_NAV_ITEMS } from './pages/admin/AdminDashboard.jsx'
 
 export default function App() {
   return (
@@ -32,7 +33,7 @@ export default function App() {
         path="/dashboard/produk"
         element={
           <ProtectedRoute role="USER">
-            <UserProductsPage />
+            <UserProductPage />
           </ProtectedRoute>
         }
       /> */}
@@ -43,6 +44,16 @@ export default function App() {
         element={
           <ProtectedRoute role="ADMIN">
             <AdminDashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/produk"
+        element={
+          <ProtectedRoute role="ADMIN">
+            <DashboardLayout navItems={ADMIN_NAV_ITEMS} brandLabel="Toko.ku Admin">
+              <ProductPage />
+            </DashboardLayout>
           </ProtectedRoute>
         }
       />

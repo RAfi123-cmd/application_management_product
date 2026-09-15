@@ -1,11 +1,7 @@
 package com.tokoku.management_product.controller;
 
-
-import javax.management.RuntimeErrorException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -13,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tokoku.management_product.constant.LoginConstant;
-import com.tokoku.management_product.dto.RegisterRequest;
-import com.tokoku.management_product.dto.RegisterResponse;
 import com.tokoku.management_product.dto.excaption.DataAlreadyExistException;
+import com.tokoku.management_product.dto.request.RegisterRequest;
+import com.tokoku.management_product.dto.response.RegisterResponse;
 import com.tokoku.management_product.persistence.entity.auth.User;
 import com.tokoku.management_product.persistence.repository.UserRepository;
 import com.tokoku.management_product.persistence.service.CustomUserDetailsService;
@@ -33,16 +29,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class RegisterController {
     private final Logger logger = LoggerFactory.getLogger(RegisterController.class);
 
-    @Autowired
+    
     private UserRepository userRepository;
 
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    @Autowired
     private JwtUtil jwtUtil;
 
     @PostMapping(LoginConstant.REGISTER_PATH)

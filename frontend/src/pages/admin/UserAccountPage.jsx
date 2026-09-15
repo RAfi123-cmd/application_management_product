@@ -17,6 +17,7 @@ export default function UserAccountPage({ role, title }) {
   const [accounts, setAccounts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [formError, setFormError] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [editingId, setEditingId] = useState(null)
   const [submitting, setSubmitting] = useState(false)
@@ -71,7 +72,7 @@ export default function UserAccountPage({ role, title }) {
       ...EMPTY_FORM,
       role,
     })
-    setError('')
+    setFormError('')
     setShowForm(true)
   }
 
@@ -91,7 +92,7 @@ export default function UserAccountPage({ role, title }) {
       password: '',
       role: account.role || role,
     })
-    setError('')
+    setFormError('')
     setShowForm(true)
   }
 
@@ -100,6 +101,7 @@ export default function UserAccountPage({ role, title }) {
 
     setShowForm(false)
     setEditingId(null)
+    setFormError('')
     setForm({
       ...EMPTY_FORM,
       role,
@@ -117,7 +119,7 @@ export default function UserAccountPage({ role, title }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
-    setError('')
+    setFormError('')
     setSubmitting(true)
 
     try {
@@ -152,7 +154,7 @@ export default function UserAccountPage({ role, title }) {
       closeForm()
       await loadAccounts()
     } catch (err) {
-      setError(
+      setFormError(
         err.response?.data?.message || 'Gagal menyimpan data akun',
       )
     } finally {
@@ -236,6 +238,12 @@ export default function UserAccountPage({ role, title }) {
             <h3>
               {editingId !== null ? 'Edit Akun' : 'Tambah Akun'}
             </h3>
+
+            {formError && (
+              <div className="acc-error acc-error-inline">
+                {formError}
+              </div>
+            )}
 
             <form onSubmit={handleSubmit}>
               <div className="acc-field">

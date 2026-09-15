@@ -1,8 +1,9 @@
 import DashboardLayout from "../DashboardLayout"
 
 const USER_NAV_ITEMS = [
-    { to: "/dashboard", label: "Ringkasan", icon: "grid" },
+    { to: "/dashboard", label: "Dashboard", icon: "grid" },
     { to: "/dashboard/produk", label: "Produk", icon: "box" },
+    { to: '/dashboard/kategori', label: 'Kategori', icon: 'tag' },
     { to: "/dashboard/riwayat", label: "Riwayat", icon: "chart" },
 ]
 

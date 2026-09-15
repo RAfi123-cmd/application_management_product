@@ -1,13 +1,14 @@
-package com.tokoku.management_product.dto;
+package com.tokoku.management_product.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class AdminLoginRequest {
+public class UserLoginRequest {
+
     @NotBlank(message = "Username tidak boleh kosong")
     private String username;
 
-    @NotBlank(message = "Passsword tidak boleh kosong")
+    @NotBlank(message = "Password tidak boleh kosong")
     private String password;
 }

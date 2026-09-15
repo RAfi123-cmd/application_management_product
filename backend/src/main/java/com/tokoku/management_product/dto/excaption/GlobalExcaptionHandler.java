@@ -11,7 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.tokoku.management_product.dto.ErrorResponse;
+import com.tokoku.management_product.dto.response.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExcaptionHandler {

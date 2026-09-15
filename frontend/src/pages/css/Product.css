@@ -1,0 +1,339 @@
+.product-page {
+  min-height: 100%;
+  padding: 6px;
+  background: #f7f5ef;
+}
+
+.product-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.product-header h2 {
+  margin: 0;
+  color: #18211f;
+  /* font-size: 22px; */
+}
+
+.product-header p {
+  margin: 5px 0 0;
+  color: #66756d;
+  font-size: 13px;
+}
+
+.add-product-button,
+.save-button {
+  border: 0;
+  border-radius: 6px;
+  padding: 10px 16px;
+  color: #fff;
+  background: #19805d;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.add-product-button:hover,
+.save-button:hover {
+  background: #126746;
+}
+
+.product-table-card {
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e7e1d7;
+  border-radius: 10px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.product-table th,
+.product-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #eeeae3;
+  text-align: left;
+  font-size: 12px;
+}
+
+.product-table th {
+  color: #6c766f;
+  background: #faf9f6;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.product-table td {
+  color: #33413b;
+}
+
+.product-actions {
+  white-space: nowrap;
+}
+
+.view-button,
+.delete-button {
+  margin-right: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.view-button {
+  color: #167456;
+}
+
+.delete-button {
+  color: #bd3b3b;
+}
+
+.empty-product {
+  padding: 30px !important;
+  color: #777 !important;
+  text-align: center !important;
+}
+
+.product-alert {
+  margin-bottom: 15px;
+  padding: 10px 14px;
+  border-radius: 6px;
+  color: #a62c2c;
+  background: #fde8e8;
+  font-size: 13px;
+}
+
+.product-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 30, 25, 0.4);
+}
+
+.product-modal {
+  width: min(440px, calc(100% - 32px));
+  padding: 24px;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #26332f;
+}
+
+.modal-header button {
+  border: 0;
+  background: transparent;
+  color: #66756d;
+  cursor: pointer;
+  font-size: 24px;
+}
+
+.product-modal label {
+  display: block;
+  margin-bottom: 13px;
+  color: #4d5d57;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.product-modal input,
+.product-modal textarea {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 6px;
+  padding: 10px;
+  border: 1px solid #dce3df;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 13px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.cancel-button {
+  border: 0;
+  border-radius: 6px;
+  padding: 10px 16px;
+  color: #52615c;
+  background: #edf0ee;
+  cursor: pointer;
+}
+
+.product-modal label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #374151;
+}
+
+.product-modal input,
+.product-modal select,
+.product-modal textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #111827;
+  background-color: #fff;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.product-modal select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2712%27%20height%3D%278%27%3E%3Cpath%20fill%3D%27%236b7280%27%20d%3D%27M0%200l6%208%206-8z%27%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+  cursor: pointer;
+}
+
+.product-modal input:focus,
+.product-modal select:focus,
+.product-modal textarea:focus {
+  outline: none;
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+}
+
+.product-toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  min-width: 240px;
+  max-width: 360px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  animation: toast-slide-in 0.25s ease-out;
+}
+
+.product-toast.success {
+  background-color: #16a34a;
+}
+
+.product-toast.error {
+  background-color: #dc2626;
+}
+
+@keyframes toast-slide-in {
+  from {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* ==== Tabel produk: rapikan baris & kolom aksi ==== */
+
+.product-table th,
+.product-table td {
+  padding: 14px 16px;
+  vertical-align: middle;
+}
+
+.product-table tbody tr {
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.product-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.product-table tbody tr:hover {
+  background-color: #fafafa;
+}
+
+.product-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  white-space: nowrap;
+}
+
+.product-actions button {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.product-actions button:hover {
+  opacity: 0.7;
+  text-decoration: underline;
+}
+
+.view-detail-button {
+  color: #0d9488; /* teal - "Lihat" */
+}
+
+.view-button {
+  color: #16a34a; /* hijau - "Edit" */
+}
+
+.delete-button {
+  color: #dc2626; /* merah - "Hapus" */
+}
+.product-modal input:disabled,
+.product-modal textarea:disabled {
+  background-color: #f9fafb;
+  color: #374151;
+  cursor: default;
+  opacity: 1;
+}
+
+.product-header h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 4px;
+}
+
+.product-header p {
+  font-size: 14px;
+  color: #6b7280; /* abu-abu, sama seperti subtitle di halaman Data Pengguna */
+  margin: 0;
+}
