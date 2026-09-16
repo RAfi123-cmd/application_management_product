@@ -5,7 +5,7 @@ import { useAuth } from '../context/useAuth.js'
 import Toast from '../components/Toast.jsx'
 import './css/Auth.css'
 
-export default function UserloginPage() {
+export default function UserLoginPage() {
   const [form, setForm] = useState({ username: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
