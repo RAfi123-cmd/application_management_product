@@ -12,6 +12,7 @@ public class ProductConstant {
     public static final String ADMIN_BASE_PATH = "/api/admin/product";
 
     public static final String VIEW_PRODUCT_ADMIN = "";
+    public static final String DETAIL_PRODUCT_ADMIN = "/{id}";
     public static final String CREATE_PRODUCT_ADMIN = "/add";
     public static final String EDIT_PRODUCT_ADMIN = "/edit/{id}";
     public static final String DELETE_PRODUCT_ADMIN = "/delete/{id}";

@@ -4,23 +4,51 @@ import '../css/Product.css'
 
 const PRODUCT_PATH = '/admin/product' // baseURL axiosInstance sudah 'http://localhost:8080/api'
 
-const KATEGORI_OPTIONS = [
-  'Makanan',
-  'Minuman',
-  'Elektronik',
-  'Pakaian',
-  'Kesehatan & Kecantikan',
-  'Rumah Tangga',
-  'Aksesoris',
-  'Lainnya',
+// Sesuaikan dengan kategori yang benar-benar ada di data CSV kamu
+const CATEGORY_OPTIONS = [
+  'Grains & Pulses',
+  'Beverages',
+  'Fruits & Vegetables',
+  'Oils & Fats',
+  'Dairy',
+  'Bakery',
 ]
 
+const STATUS_OPTIONS = ['Active', 'Discontinued', 'Backordered']
+
 const initialForm = {
-  name: '',
-  kategori: '',
-  harga: '',
-  stok: '',
-  deskripsi: '',
+  productId: '',
+  productName: '',
+  category: '',
+  supplierId: '',
+  supplierName: '',
+  stockQuantity: '',
+  reorderLevel: '',
+  reorderQuantity: '',
+  unitPrice: '',
+  dateReceived: '',
+  lastOrderDate: '',
+  expirationDate: '',
+  warehouseLocation: '',
+  salesVolume: '',
+  inventoryTurnoverRate: '',
+  status: '',
+}
+
+// Backend ProductRequest/ProductResponse memakai nama field "catagory" (ikut typo
+// dari CSV), sedangkan form di sini pakai "category" biar lebih rapi. Dua helper
+// berikut menjembatani perbedaan itu di batas API saja.
+const mapResponseToProduct = (item) => ({
+  ...item,
+  category: item.catagory,
+})
+
+const mapPayloadToRequest = (payload) => {
+  const { category, ...rest } = payload
+  return {
+    ...rest,
+    catagory: category,
+  }
 }
 
 export default function ProductPage() {
@@ -33,6 +61,12 @@ export default function ProductPage() {
   const [error, setError] = useState('')
   const [toast, setToast] = useState(null) // { message: string, type: 'success' | 'error' }
 
+  // State pagination, mengikuti bentuk Page dari Spring Data
+  const [page, setPage] = useState(0) // halaman aktif, 0-based
+  const [size] = useState(10) // jumlah baris per halaman
+  const [totalPages, setTotalPages] = useState(0)
+  const [totalElements, setTotalElements] = useState(0)
+
   const showToast = (message, type = 'success') => {
     setToast({ message, type })
   }
@@ -43,24 +77,44 @@ export default function ProductPage() {
     return () => clearTimeout(timer)
   }, [toast])
 
-  const loadProducts = useCallback(async () => {
+  const loadProducts = useCallback(async (pageToLoad = page) => {
     try {
       setLoading(true)
       setError('')
-      const response = await axiosInstance.get(PRODUCT_PATH)
-      setProducts(response.data)
+      const response = await axiosInstance.get(PRODUCT_PATH, {
+        params: {
+          page: pageToLoad,
+          size,
+          sortBy: 'productName',
+          direction: 'asc',
+        },
+      })
+
+      // response.data berbentuk Page: { content, totalPages, totalElements, number, ... }
+      const pageData = response.data
+      setProducts((pageData.content || []).map(mapResponseToProduct))
+      setTotalPages(pageData.totalPages ?? 0)
+      setTotalElements(pageData.totalElements ?? 0)
+      setPage(pageData.number ?? pageToLoad)
     } catch (err) {
       setError(err.response?.data?.message || 'Gagal mengambil data produk')
     } finally {
       setLoading(false)
     }
-  }, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [size])
 
   useEffect(() => {
     startTransition(() => {
-      loadProducts()
+      loadProducts(0)
     })
-  }, [loadProducts])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const goToPage = (targetPage) => {
+    if (targetPage < 0 || targetPage >= totalPages || targetPage === page) return
+    loadProducts(targetPage)
+  }
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -88,11 +142,22 @@ export default function ProductPage() {
   const openEditForm = (product) => {
     setEditingId(product.id)
     setForm({
-      name: product.name || '',
-      kategori: product.kategori || '',
-      harga: product.harga || '',
-      stok: product.stok || '',
-      deskripsi: product.deskripsi || '',
+      productId: product.productId || '',
+      productName: product.productName || '',
+      category: product.category || '',
+      supplierId: product.supplierId || '',
+      supplierName: product.supplierName || '',
+      stockQuantity: product.stockQuantity ?? '',
+      reorderLevel: product.reorderLevel ?? '',
+      reorderQuantity: product.reorderQuantity ?? '',
+      unitPrice: product.unitPrice ?? '',
+      dateReceived: product.dateReceived || '',
+      lastOrderDate: product.lastOrderDate || '',
+      expirationDate: product.expirationDate || '',
+      warehouseLocation: product.warehouseLocation || '',
+      salesVolume: product.salesVolume ?? '',
+      inventoryTurnoverRate: product.inventoryTurnoverRate ?? '',
+      status: product.status || '',
     })
     setError('')
     setFormOpen(true)
@@ -109,24 +174,37 @@ export default function ProductPage() {
     setError('')
 
     const payload = {
-      name: form.name,
-      kategori: form.kategori,
-      harga: Number(form.harga),
-      stok: Number(form.stok),
-      deskripsi: form.deskripsi,
+      productId: form.productId,
+      productName: form.productName,
+      category: form.category,
+      supplierId: form.supplierId,
+      supplierName: form.supplierName,
+      stockQuantity: Number(form.stockQuantity),
+      reorderLevel: Number(form.reorderLevel),
+      reorderQuantity: Number(form.reorderQuantity),
+      unitPrice: Number(form.unitPrice),
+      dateReceived: form.dateReceived,
+      lastOrderDate: form.lastOrderDate,
+      expirationDate: form.expirationDate,
+      warehouseLocation: form.warehouseLocation,
+      salesVolume: Number(form.salesVolume),
+      inventoryTurnoverRate: Number(form.inventoryTurnoverRate),
+      status: form.status,
     }
+
+    const requestBody = mapPayloadToRequest(payload)
 
     try {
       if (editingId) {
-        await axiosInstance.put(`${PRODUCT_PATH}/edit/${editingId}`, payload)
+        await axiosInstance.put(`${PRODUCT_PATH}/edit/${editingId}`, requestBody)
         showToast('Produk berhasil diperbarui')
       } else {
-        await axiosInstance.post(`${PRODUCT_PATH}/add`, payload)
+        await axiosInstance.post(`${PRODUCT_PATH}/add`, requestBody)
         showToast('Produk berhasil ditambahkan')
       }
 
       closeForm()
-      await loadProducts()
+      await loadProducts(page)
     } catch (err) {
       const message = err.response?.data?.message || 'Gagal menyimpan produk'
       setError(message)
@@ -142,12 +220,23 @@ export default function ProductPage() {
     try {
       await axiosInstance.delete(`${PRODUCT_PATH}/delete/${id}`)
       showToast('Produk berhasil dihapus')
-      await loadProducts()
+
+      // Kalau ini item terakhir di halaman terakhir, mundur satu halaman
+      const isLastItemOnPage = products.length === 1 && page > 0
+      await loadProducts(isLastItemOnPage ? page - 1 : page)
     } catch (err) {
       const message = err.response?.data?.message || 'Gagal menghapus produk'
       setError(message)
       showToast(message, 'error')
     }
+  }
+
+  const formatCurrency = (value) =>
+    `Rp ${Number(value || 0).toLocaleString('id-ID')}`
+
+  const statusBadgeClass = (status) => {
+    const key = (status || '').toLowerCase()
+    return `status-badge status-badge--${key}`
   }
 
   return (
@@ -179,11 +268,14 @@ export default function ProductPage() {
             <table className="product-table">
               <thead>
                 <tr>
+                  <th>No</th>
+                  <th>ID Produk</th>
                   <th>Nama Produk</th>
                   <th>Kategori</th>
-                  <th>Harga</th>
+                  <th>Supplier</th>
                   <th>Stok</th>
-                  <th>Deskripsi</th>
+                  <th>Harga Satuan</th>
+                  <th>Status</th>
                   <th>Aksi</th>
                 </tr>
               </thead>
@@ -191,20 +283,25 @@ export default function ProductPage() {
               <tbody>
                 {products.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="empty-product">
+                    <td colSpan="9" className="empty-product">
                       Belum ada data produk.
                     </td>
                   </tr>
                 ) : (
-                  products.map((product) => (
-                    <tr key={product.id}>
-                      <td>{product.name}</td>
-                      <td>{product.kategori}</td>
+                  products.map((product, index) => (
+                    <tr key={product.productId}>
+                      <td>{page * size + index + 1}</td>
+                      <td>{product.productId}</td>
+                      <td>{product.productName}</td>
+                      <td>{product.category}</td>
+                      <td>{product.supplierName}</td>
+                      <td>{product.stockQuantity}</td>
+                      <td>{formatCurrency(product.unitPrice)}</td>
                       <td>
-                        Rp {Number(product.harga).toLocaleString('id-ID')}
+                        <span className={statusBadgeClass(product.status)}>
+                          {product.status}
+                        </span>
                       </td>
-                      <td>{product.stok}</td>
-                      <td>{product.deskripsi || '-'}</td>
                       <td className="product-actions">
                         <button
                           className="view-detail-button"
@@ -234,6 +331,45 @@ export default function ProductPage() {
             </table>
           </div>
         )}
+
+        {!loading && totalPages > 0 && (
+          <div className="product-pagination">
+            <span className="product-pagination-info">
+              Halaman {page + 1} dari {totalPages} ({totalElements} produk)
+            </span>
+
+            <div className="product-pagination-controls">
+              <button
+                type="button"
+                onClick={() => goToPage(0)}
+                disabled={page === 0}
+              >
+                « Awal
+              </button>
+              <button
+                type="button"
+                onClick={() => goToPage(page - 1)}
+                disabled={page === 0}
+              >
+                ‹ Sebelumnya
+              </button>
+              <button
+                type="button"
+                onClick={() => goToPage(page + 1)}
+                disabled={page >= totalPages - 1}
+              >
+                Berikutnya ›
+              </button>
+              <button
+                type="button"
+                onClick={() => goToPage(totalPages - 1)}
+                disabled={page >= totalPages - 1}
+              >
+                Akhir »
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {viewingProduct && (
@@ -247,37 +383,83 @@ export default function ProductPage() {
             </div>
 
             <label>
+              ID Produk
+              <input value={viewingProduct.productId} disabled readOnly />
+            </label>
+
+            <label>
               Nama Produk
-              <input value={viewingProduct.name} disabled readOnly />
+              <input value={viewingProduct.productName} disabled readOnly />
             </label>
 
             <label>
               Kategori
-              <input value={viewingProduct.kategori || '-'} disabled readOnly />
+              <input value={viewingProduct.category || '-'} disabled readOnly />
             </label>
 
             <label>
-              Harga
-              <input
-                value={`Rp ${Number(viewingProduct.harga).toLocaleString('id-ID')}`}
-                disabled
-                readOnly
-              />
+              Supplier ID
+              <input value={viewingProduct.supplierId || '-'} disabled readOnly />
+            </label>
+
+            <label>
+              Nama Supplier
+              <input value={viewingProduct.supplierName || '-'} disabled readOnly />
             </label>
 
             <label>
               Stok
-              <input value={viewingProduct.stok} disabled readOnly />
+              <input value={viewingProduct.stockQuantity} disabled readOnly />
             </label>
 
             <label>
-              Deskripsi
-              <textarea
-                value={viewingProduct.deskripsi || '-'}
-                rows="4"
-                disabled
-                readOnly
-              />
+              Reorder Level
+              <input value={viewingProduct.reorderLevel} disabled readOnly />
+            </label>
+
+            <label>
+              Reorder Quantity
+              <input value={viewingProduct.reorderQuantity ?? '-'} disabled readOnly />
+            </label>
+
+            <label>
+              Harga Satuan
+              <input value={formatCurrency(viewingProduct.unitPrice)} disabled readOnly />
+            </label>
+
+            <label>
+              Tanggal Diterima
+              <input value={viewingProduct.dateReceived || '-'} disabled readOnly />
+            </label>
+
+            <label>
+              Tanggal Order Terakhir
+              <input value={viewingProduct.lastOrderDate || '-'} disabled readOnly />
+            </label>
+
+            <label>
+              Tanggal Kadaluarsa
+              <input value={viewingProduct.expirationDate || '-'} disabled readOnly />
+            </label>
+
+            <label>
+              Lokasi Gudang
+              <input value={viewingProduct.warehouseLocation || '-'} disabled readOnly />
+            </label>
+
+            <label>
+              Volume Penjualan
+              <input value={viewingProduct.salesVolume ?? '-'} disabled readOnly />
+            </label>
+
+            <label>
+              Inventory Turnover Rate
+              <input value={viewingProduct.inventoryTurnoverRate ?? '-'} disabled readOnly />
+            </label>
+
+            <label>
+              Status
+              <input value={viewingProduct.status || '-'} disabled readOnly />
             </label>
 
             <div className="modal-actions">
@@ -310,10 +492,21 @@ export default function ProductPage() {
             </div>
 
             <label>
+              ID Produk
+              <input
+                name="productId"
+                value={form.productId}
+                onChange={handleChange}
+                disabled={Boolean(editingId)}
+                required
+              />
+            </label>
+
+            <label>
               Nama Produk
               <input
-                name="name"
-                value={form.name}
+                name="productName"
+                value={form.productName}
                 onChange={handleChange}
                 required
               />
@@ -322,29 +515,37 @@ export default function ProductPage() {
             <label>
               Kategori
               <select
-                name="kategori"
-                value={form.kategori}
+                name="category"
+                value={form.category}
                 onChange={handleChange}
                 required
               >
                 <option value="" disabled>
                   Pilih kategori
                 </option>
-                {KATEGORI_OPTIONS.map((kategori) => (
-                  <option key={kategori} value={kategori}>
-                    {kategori}
+                {CATEGORY_OPTIONS.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
                   </option>
                 ))}
               </select>
             </label>
 
             <label>
-              Harga
+              Supplier ID
               <input
-                type="number"
-                min="0"
-                name="harga"
-                value={form.harga}
+                name="supplierId"
+                value={form.supplierId}
+                onChange={handleChange}
+                required
+              />
+            </label>
+
+            <label>
+              Nama Supplier
+              <input
+                name="supplierName"
+                value={form.supplierName}
                 onChange={handleChange}
                 required
               />
@@ -355,21 +556,127 @@ export default function ProductPage() {
               <input
                 type="number"
                 min="0"
-                name="stok"
-                value={form.stok}
+                name="stockQuantity"
+                value={form.stockQuantity}
                 onChange={handleChange}
                 required
               />
             </label>
 
             <label>
-              Deskripsi
-              <textarea
-                name="deskripsi"
-                value={form.deskripsi}
+              Reorder Level
+              <input
+                type="number"
+                min="0"
+                name="reorderLevel"
+                value={form.reorderLevel}
                 onChange={handleChange}
-                rows="4"
+                required
               />
+            </label>
+
+            <label>
+              Reorder Quantity
+              <input
+                type="number"
+                min="0"
+                name="reorderQuantity"
+                value={form.reorderQuantity}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Harga Satuan
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                name="unitPrice"
+                value={form.unitPrice}
+                onChange={handleChange}
+                required
+              />
+            </label>
+
+            <label>
+              Tanggal Diterima
+              <input
+                type="date"
+                name="dateReceived"
+                value={form.dateReceived}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Tanggal Order Terakhir
+              <input
+                type="date"
+                name="lastOrderDate"
+                value={form.lastOrderDate}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Tanggal Kadaluarsa
+              <input
+                type="date"
+                name="expirationDate"
+                value={form.expirationDate}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Lokasi Gudang
+              <input
+                name="warehouseLocation"
+                value={form.warehouseLocation}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Volume Penjualan
+              <input
+                type="number"
+                min="0"
+                name="salesVolume"
+                value={form.salesVolume}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Inventory Turnover Rate
+              <input
+                type="number"
+                min="0"
+                name="inventoryTurnoverRate"
+                value={form.inventoryTurnoverRate}
+                onChange={handleChange}
+              />
+            </label>
+
+            <label>
+              Status
+              <select
+                name="status"
+                value={form.status}
+                onChange={handleChange}
+                required
+              >
+                <option value="" disabled>
+                  Pilih status
+                </option>
+                {STATUS_OPTIONS.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
             </label>
 
             <div className="modal-actions">

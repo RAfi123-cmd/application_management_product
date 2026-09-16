@@ -1,50 +1,158 @@
+/* ==========================================================================
+   Design tokens
+   ========================================================================== */
+
 .product-page {
+  --color-bg: #f6f5f1;
+  --color-surface: #ffffff;
+  --color-border: #e4e2db;
+  --color-border-strong: #d3d0c6;
+  --color-text: #1f2a24;
+  --color-text-muted: #6b7570;
+  --color-primary: #2e7d5b;
+  --color-primary-dark: #235f45;
+  --color-primary-tint: #e7f3ee;
+  --color-danger: #c0392b;
+  --color-danger-tint: #fbeae8;
+  --color-status-active-fg: #1f7a4d;
+  --color-status-active-bg: #e4f5eb;
+  --color-status-backordered-fg: #a6620c;
+  --color-status-backordered-bg: #fbedd8;
+  --color-status-discontinued-fg: #6b6f6c;
+  --color-status-discontinued-bg: #eeece7;
+
+  --radius-md: 10px;
+  --radius-sm: 6px;
+  --shadow-card: 0 1px 2px rgba(20, 30, 25, 0.06), 0 1px 1px rgba(20, 30, 25, 0.04);
+  --shadow-modal: 0 20px 50px rgba(15, 25, 20, 0.25);
+
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+  color: var(--color-text);
+  background: var(--color-bg);
   min-height: 100%;
-  padding: 6px;
-  background: #f7f5ef;
+  box-sizing: border-box;
 }
+
+.product-page * {
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Header
+   ========================================================================== */
 
 .product-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 20px;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .product-header h2 {
-  margin: 0;
-  color: #18211f;
-  /* font-size: 22px; */
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .product-header p {
-  margin: 5px 0 0;
-  color: #66756d;
-  font-size: 13px;
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
 }
 
-.add-product-button,
-.save-button {
-  border: 0;
-  border-radius: 6px;
-  padding: 10px 16px;
+.add-product-button {
+  flex-shrink: 0;
+  background: var(--color-primary);
   color: #fff;
-  background: #19805d;
-  cursor: pointer;
-  font-size: 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 1.1rem;
+  font-size: 0.9rem;
   font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
 }
 
-.add-product-button:hover,
-.save-button:hover {
-  background: #126746;
+.add-product-button:hover {
+  background: var(--color-primary-dark);
 }
+
+.add-product-button:focus-visible {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Alerts & toast
+   ========================================================================== */
+
+.product-alert {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+}
+
+.product-alert.error {
+  background: var(--color-danger-tint);
+  color: var(--color-danger);
+  border: 1px solid rgba(192, 57, 43, 0.25);
+}
+
+.product-toast {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1000;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-modal);
+  animation: toast-in 0.18s ease-out;
+}
+
+.product-toast.success {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.product-toast.error {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ==========================================================================
+   Table card
+   ========================================================================== */
 
 .product-table-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #e7e1d7;
-  border-radius: 10px;
+}
+
+.product-table-card > p {
+  margin: 0;
+  padding: 2.5rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
 }
 
 .table-wrapper {
@@ -54,286 +162,359 @@
 .product-table {
   width: 100%;
   border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 720px;
 }
 
-.product-table th,
-.product-table td {
-  padding: 12px 10px;
-  border-bottom: 1px solid #eeeae3;
+.product-table thead th {
   text-align: left;
-  font-size: 12px;
-}
-
-.product-table th {
-  color: #6c766f;
-  background: #faf9f6;
-  font-size: 11px;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.72rem;
   font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-}
-
-.product-table td {
-  color: #33413b;
-}
-
-.product-actions {
+  color: var(--color-text-muted);
+  background: #fbfaf7;
+  border-bottom: 1px solid var(--color-border);
   white-space: nowrap;
 }
 
-.view-button,
-.delete-button {
-  margin-right: 10px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  font-size: 12px;
+.product-table tbody td {
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+  white-space: nowrap;
 }
 
-.view-button {
-  color: #167456;
+.product-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
-.delete-button {
-  color: #bd3b3b;
+.product-table tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+.product-table tbody tr:hover {
+  background: #fbfaf7;
+}
+
+.product-table td:nth-child(1) {
+  width: 3rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.product-table thead th:nth-child(1) {
+  text-align: center;
+  width: 3rem;
+}
+
+.product-table td:nth-child(2) {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+}
+
+.product-table td:nth-child(3) {
+  font-weight: 500;
+}
+
+.product-table td:nth-child(7) {
+  font-variant-numeric: tabular-nums;
 }
 
 .empty-product {
-  padding: 30px !important;
-  color: #777 !important;
-  text-align: center !important;
+  text-align: center;
+  padding: 2.5rem !important;
+  color: var(--color-text-muted);
+  white-space: normal !important;
 }
 
-.product-alert {
-  margin-bottom: 15px;
-  padding: 10px 14px;
-  border-radius: 6px;
-  color: #a62c2c;
-  background: #fde8e8;
-  font-size: 13px;
+/* Status badge, warnanya mengikuti nilai status via class dinamis dari JSX.
+   Gaya disamakan dengan badge role di halaman Data User: pill polos,
+   teks kapital, tanpa indikator titik. */
+.status-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
 }
+
+.status-badge--active {
+  color: var(--color-status-active-fg);
+  background: var(--color-status-active-bg);
+}
+
+.status-badge--backordered {
+  color: var(--color-status-backordered-fg);
+  background: var(--color-status-backordered-bg);
+}
+
+.status-badge--discontinued {
+  color: var(--color-status-discontinued-fg);
+  background: var(--color-status-discontinued-bg);
+}
+
+.product-actions {
+  display: flex;
+  gap: 0.9rem;
+  white-space: nowrap;
+}
+
+.product-actions button {
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: opacity 0.12s ease;
+}
+
+.product-actions button:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+}
+
+.view-detail-button {
+  color: var(--color-primary);
+}
+
+.view-button {
+  color: var(--color-primary);
+}
+
+.delete-button {
+  color: var(--color-danger);
+}
+
+/* ==========================================================================
+   Pagination
+   ========================================================================== */
+
+.product-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.product-pagination-info {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.product-pagination-controls {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.product-pagination-controls button {
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.product-pagination-controls button:hover:not(:disabled) {
+  background: var(--color-primary-tint);
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
+.product-pagination-controls button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.product-pagination-controls button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 1px;
+}
+
+/* ==========================================================================
+   Modal (view / create / edit)
+   ========================================================================== */
 
 .product-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 10;
+  background: rgba(22, 48, 43, 0.45);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  background: rgba(15, 30, 25, 0.4);
+  padding: 3rem 1.5rem;
+  overflow-y: auto;
+  z-index: 900;
 }
 
 .product-modal {
-  width: min(440px, calc(100% - 32px));
-  padding: 24px;
-  border-radius: 10px;
-  background: #fff;
-  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-modal);
+  width: 100%;
+  max-width: 520px;
+  padding: 1.5rem 1.75rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .modal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 18px;
+  margin-bottom: 0.25rem;
 }
 
 .modal-header h3 {
   margin: 0;
-  color: #26332f;
-}
-
-.modal-header button {
-  border: 0;
-  background: transparent;
-  color: #66756d;
-  cursor: pointer;
-  font-size: 24px;
-}
-
-.product-modal label {
-  display: block;
-  margin-bottom: 13px;
-  color: #4d5d57;
-  font-size: 12px;
+  font-size: 1.15rem;
   font-weight: 600;
 }
 
-.product-modal input,
-.product-modal textarea {
-  box-sizing: border-box;
-  width: 100%;
-  margin-top: 6px;
-  padding: 10px;
-  border: 1px solid #dce3df;
-  border-radius: 6px;
-  font: inherit;
-  font-size: 13px;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 20px;
-}
-
-.cancel-button {
-  border: 0;
-  border-radius: 6px;
-  padding: 10px 16px;
-  color: #52615c;
-  background: #edf0ee;
+.modal-header button {
+  border: none;
+  background: transparent;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--color-text-muted);
   cursor: pointer;
+  padding: 0.25rem;
+  border-radius: var(--radius-sm);
+}
+
+.modal-header button:hover {
+  background: #eeece7;
+  color: var(--color-text);
 }
 
 .product-modal label {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 16px;
+  gap: 0.35rem;
+  font-size: 0.82rem;
   font-weight: 500;
-  font-size: 14px;
-  color: #374151;
+  color: var(--color-text-muted);
 }
 
 .product-modal input,
 .product-modal select,
 .product-modal textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: inherit;
-  color: #111827;
-  background-color: #fff;
-  box-sizing: border-box;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font: inherit;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.7rem;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
 }
 
-.product-modal select {
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%2712%27%20height%3D%278%27%3E%3Cpath%20fill%3D%27%236b7280%27%20d%3D%27M0%200l6%208%206-8z%27%2F%3E%3C%2Fsvg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 32px;
-  cursor: pointer;
+.product-modal input:disabled,
+.product-modal textarea:disabled {
+  background: #fbfaf7;
+  color: var(--color-text-muted);
 }
 
 .product-modal input:focus,
 .product-modal select:focus,
 .product-modal textarea:focus {
   outline: none;
-  border-color: #16a34a;
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-tint);
 }
 
-.product-toast {
-  position: fixed;
-  top: 24px;
-  right: 24px;
-  min-width: 240px;
-  max-width: 360px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  animation: toast-slide-in 0.25s ease-out;
+.product-modal textarea {
+  resize: vertical;
+  min-height: 4.5rem;
 }
 
-.product-toast.success {
-  background-color: #16a34a;
-}
-
-.product-toast.error {
-  background-color: #dc2626;
-}
-
-@keyframes toast-slide-in {
-  from {
-    transform: translateX(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* ==== Tabel produk: rapikan baris & kolom aksi ==== */
-
-.product-table th,
-.product-table td {
-  padding: 14px 16px;
-  vertical-align: middle;
-}
-
-.product-table tbody tr {
-  border-bottom: 1px solid #f1f3f5;
-}
-
-.product-table tbody tr:last-child {
-  border-bottom: none;
-}
-
-.product-table tbody tr:hover {
-  background-color: #fafafa;
-}
-
-.product-actions {
+.modal-actions {
   display: flex;
-  align-items: center;
-  gap: 18px;
-  white-space: nowrap;
+  justify-content: flex-end;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
 }
 
-.product-actions button {
-  background: none;
-  border: none;
-  padding: 0;
-  font-size: 14px;
+.modal-actions button {
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 1.1rem;
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  border: 1px solid transparent;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
 }
 
-.product-actions button:hover {
-  opacity: 0.7;
-  text-decoration: underline;
+.cancel-button {
+  background: var(--color-surface);
+  border-color: var(--color-border-strong);
+  color: var(--color-text-muted);
 }
 
-.view-detail-button {
-  color: #0d9488; /* teal - "Lihat" */
+.cancel-button:hover {
+  background: #fbfaf7;
+  color: var(--color-text);
 }
 
-.view-button {
-  color: #16a34a; /* hijau - "Edit" */
+.save-button {
+  background: var(--color-primary);
+  color: #fff;
 }
 
-.delete-button {
-  color: #dc2626; /* merah - "Hapus" */
-}
-.product-modal input:disabled,
-.product-modal textarea:disabled {
-  background-color: #f9fafb;
-  color: #374151;
-  cursor: default;
-  opacity: 1;
+.save-button:hover {
+  background: var(--color-primary-dark);
 }
 
-.product-header h2 {
-  font-size: 20px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 4px;
-}
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
 
-.product-header p {
-  font-size: 14px;
-  color: #6b7280; /* abu-abu, sama seperti subtitle di halaman Data Pengguna */
-  margin: 0;
+@media (max-width: 640px) {
+  .product-page {
+    padding: 1.25rem 1rem;
+  }
+
+  .product-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-product-button {
+    width: 100%;
+  }
+
+  .product-pagination {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .product-pagination-controls {
+    justify-content: space-between;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
 }
