@@ -72,7 +72,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/api/auth/**").permitAll()   
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/uploads/**").permitAll() // gambar produk diakses publik lewat <img>, tanpa token
                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                 .requestMatchers("/api/user/**").hasAuthority("USER")
                 .anyRequest().authenticated()              
@@ -82,6 +83,4 @@ public class SecurityConfig {
 
         return http.build();
     } 
-
-    
 }

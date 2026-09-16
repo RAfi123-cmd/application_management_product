@@ -12,8 +12,7 @@ export default function UserLoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-
-  // Toast dari halaman lain, misal setelah registrasi berhasil
+  
   const [toast, setToast] = useState(location.state?.toast || '')
 
   const handleChange = (e) => {
