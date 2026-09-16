@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { startTransition, useCallback, useEffect, useState } from 'react'
 import axiosInstance from '../../api/axiosInstance'
 import '../css/Product.css'
 
@@ -43,7 +43,7 @@ export default function ProductPage() {
     return () => clearTimeout(timer)
   }, [toast])
 
-  const loadProducts = async () => {
+  const loadProducts = useCallback(async () => {
     try {
       setLoading(true)
       setError('')
@@ -54,11 +54,13 @@ export default function ProductPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
   useEffect(() => {
-    loadProducts()
-  }, [])
+    startTransition(() => {
+      loadProducts()
+    })
+  }, [loadProducts])
 
   const handleChange = (event) => {
     const { name, value } = event.target

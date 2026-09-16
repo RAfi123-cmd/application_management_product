@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from 'react'
+import { startTransition, useCallback, useEffect, useState } from 'react'
 import DashboardLayout from '../DashboardLayout.jsx'
 import axiosInstance from '../../api/axiosInstance.js'
-import { ADMIN_NAV_ITEMS } from './AdminDashboard.jsx'
+import { ADMIN_NAV_ITEMS } from '../js/adminNavItems.js'
 import Toast from '../../components/Toast.jsx'
 import '../css/AdminAccount.css'
 
@@ -27,6 +27,15 @@ export default function AdminAccountsPage({ role, title }) {
   const [viewingAccount, setViewingAccount] = useState(null)
   const [form, setForm] = useState({ ...EMPTY_FORM, role })
   const [toast, setToast] = useState(null)
+  const [prevRole, setPrevRole] = useState(role)
+
+  if (role !== prevRole) {
+    setPrevRole(role)
+    setForm((previous) => ({
+      ...previous,
+      role,
+    }))
+  }
 
   const showToast = useCallback((message, type = 'success') => {
     setToast({ message, type })
@@ -60,13 +69,10 @@ export default function AdminAccountsPage({ role, title }) {
   }, [role])
 
   useEffect(() => {
-    setForm((previous) => ({
-      ...previous,
-      role,
-    }))
-
-    loadAccounts()
-  }, [role, loadAccounts])
+    startTransition(() => {
+      loadAccounts()
+    })
+  }, [loadAccounts])
 
   const openCreateForm = () => {
     setEditingId(null)

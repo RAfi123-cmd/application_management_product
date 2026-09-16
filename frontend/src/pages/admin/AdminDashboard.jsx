@@ -1,12 +1,6 @@
 import DashboardLayout from "../DashboardLayout"
 import AdminStats from "../AdminStats"
-
-export const ADMIN_NAV_ITEMS = [
-  { to: '/admin/dashboard', label: 'Dashboard', icon: 'grid', end: true },
-  { to: "/admin/produk", label: "Produk", icon: "box" },
-  { to: '/admin/dashboard/pengguna', label: 'Pengguna', icon: 'box' },
-  { to: '/admin/dashboard/admin', label: 'Data Admin', icon: 'box' },
-]
+import { ADMIN_NAV_ITEMS } from "../js/adminNavItems"
 
 export default function AdminDashboard() {
   const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}")

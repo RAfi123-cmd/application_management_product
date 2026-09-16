@@ -1,5 +1,7 @@
 package com.tokoku.management_product.dto.request;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public class ProductRequest {
     private Long id;
     private String name;
@@ -7,6 +9,7 @@ public class ProductRequest {
     private double harga;
     private Integer stok;
     private String deskripsi;
+    private MultipartFile image;
 
     public ProductRequest(Long id, String name, String kategori, double harga, Integer stok, String deskripsi) {
         this.id = id;
@@ -52,6 +55,14 @@ public class ProductRequest {
     }
     public void setDeskripsi(String deskripsi) {
         this.deskripsi = deskripsi;
+    }
+
+    public MultipartFile getImage() {
+        return image;
+    }
+
+    public void setImage(MultipartFile image) {
+        this.image = image;
     }
     
 

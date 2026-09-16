@@ -20,15 +20,17 @@ public class Product {
     private double harga;
     private Integer stok;
     private String deskripsi;
+    private String image;
 
     protected  Product(){}
     
-    public Product(String name, String kategori, double harga, Integer stok, String deskripsi) {
+    public Product(String name, String kategori, double harga, Integer stok, String deskripsi, String image) {
         this.name = name;
         this.kategori = kategori;
         this.harga = harga;
         this.stok = stok;
         this.deskripsi = deskripsi;
+        this.image = image;
     }
     public Long getId() {
         return id;
@@ -67,5 +69,13 @@ public class Product {
 
     public void setDeskripsi(String deskripsi) {
         this.deskripsi = deskripsi;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }
