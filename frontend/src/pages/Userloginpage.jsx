@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import axiosInstance from '../api/axiosInstance'
-import { useAuth } from '../context/useAuth'
+import axiosInstance from '../api/axiosInstance.js'
+import { useAuth } from '../context/useAuth.js'
 import Toast from '../components/Toast.jsx'
 import './css/Auth.css'
 
