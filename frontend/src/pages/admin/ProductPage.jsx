@@ -2,9 +2,8 @@ import { startTransition, useCallback, useEffect, useState } from 'react'
 import axiosInstance from '../../api/axiosInstance'
 import '../css/Product.css'
 
-const PRODUCT_PATH = '/admin/product' // baseURL axiosInstance sudah 'http://localhost:8080/api'
+const PRODUCT_PATH = '/admin/product' 
 
-// Sesuaikan dengan kategori yang benar-benar ada di data CSV kamu
 const CATEGORY_OPTIONS = [
   'Grains & Pulses',
   'Beverages',
@@ -35,9 +34,6 @@ const initialForm = {
   status: '',
 }
 
-// Backend ProductRequest/ProductResponse memakai nama field "catagory" (ikut typo
-// dari CSV), sedangkan form di sini pakai "category" biar lebih rapi. Dua helper
-// berikut menjembatani perbedaan itu di batas API saja.
 const mapResponseToProduct = (item) => ({
   ...item,
   category: item.catagory,

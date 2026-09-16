@@ -1,6 +1,11 @@
 package com.tokoku.management_product.persistence.service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -21,8 +26,52 @@ public class ProductService {
     }
 
     public Page<ProductResponse> getAllProducts(Pageable pageable) {
-        return productRepository.findAll(pageable)
-                .map(this::toResponse);
+        List<Product> products = new ArrayList<>(productRepository.findAll());
+
+        Comparator<Product> comparator = Comparator.comparing(Product::getProductName,Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
+        quickSort(products, 0, products.size() - 1, comparator);
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), products.size());
+
+        List<ProductResponse> result = products.subList(start, end).stream().map(this::toResponse).toList();
+        return new PageImpl<>(result, pageable, products.size());
+    }
+
+    private <T> void quickSort(
+        List<T> list,
+        int low,
+        int high,
+        Comparator<T> comparator
+    ){
+        if (low >= high) {
+            return;
+        }
+
+        int pivotIndex = partition(list, low, high, comparator);
+
+        quickSort(list, low, pivotIndex - 1, comparator);
+        quickSort(list, pivotIndex + 1, high, comparator);
+    }
+
+    private <T> int partition(List<T> list, int low, int high, Comparator<T> comparator){
+        T pivot = list.get(high);
+        int index = low;
+
+        for (int i = low; i < high; i++) {
+            if (comparator.compare(list.get(i), pivot) <= 0) {
+                T temp = list.get(index);
+                list.set(index, list.get(i));
+                list.set(i, temp);
+                index++;
+            }
+        }
+
+        T temp = list.get(index);
+        list.set(index, list.get(high));
+        list.set(high, temp);
+
+        return index;
     }
 
     public ProductResponse getProductId(Long id) {
