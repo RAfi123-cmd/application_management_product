@@ -6,10 +6,11 @@ import ProtectedRoute from './components/ProtectedRoute.jsx'
 import UserDashboard from './pages/user/UserDashboard.jsx'
 import UserAccountPage from './pages/admin/UserAccountPage.jsx'
 import AdminAccountsPage from './pages/admin/AdminAccountPage.jsx'
-import UserLoginPage from './pages/UserLoginpage.jsx'
+import UserLoginPage from './pages/UserLoginPage.jsx'
 import ProductPage from './pages/admin/ProductPage.jsx'
 import DashboardLayout from './pages/DashboardLayout.jsx'
-import AdminDashboard, { ADMIN_NAV_ITEMS } from './pages/admin/AdminDashboard.jsx'
+import AdminDashboard from './pages/admin/AdminDashboard.jsx'
+import { ADMIN_NAV_ITEMS } from './pages/js/adminNavItems.js'
 
 export default function App() {
   return (
