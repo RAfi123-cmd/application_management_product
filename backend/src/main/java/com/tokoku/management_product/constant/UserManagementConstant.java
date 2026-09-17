@@ -15,6 +15,7 @@ public class UserManagementConstant {
     
     // API Stats
     public static final String STATS_PATH = "/stats";
+    public static final String PRODUCT_STATS = "/product-stats";
 
     // Operations CRUD user
     public static final String VIEW = "/{id}";

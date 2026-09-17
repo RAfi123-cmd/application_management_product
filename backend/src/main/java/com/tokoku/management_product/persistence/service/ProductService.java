@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -19,23 +21,40 @@ import com.tokoku.management_product.persistence.repository.ProductRepository;
 @Service
 public class ProductService {
 
+    private static final Logger log = LoggerFactory.getLogger(ProductService.class); 
+
     private final ProductRepository productRepository;
 
     public ProductService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
-    public Page<ProductResponse> getAllProducts(Pageable pageable) {
-        List<Product> products = new ArrayList<>(productRepository.findAll());
+    public List<String> getAllProductNames(){
+        return productRepository.findDistinctProductNames();
+    }
+
+    public Page<ProductResponse> getAllProducts(Pageable pageable, String search, String name, String category, String status) {
+        var spec = ProductSpesification.filter(search, name, category, status);
+        List<Product> filtered = new ArrayList<>(productRepository.findAll(spec));
 
         Comparator<Product> comparator = Comparator.comparing(Product::getProductName,Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER));
-        quickSort(products, 0, products.size() - 1, comparator);
+        long startTime = System.nanoTime();
+        quickSort(filtered, 0, filtered.size() - 1, comparator);
+        long endTime = System.nanoTime();
+        long durationNanos = endTime - startTime;
+        double durationMillis = durationNanos / 1_000_000.0;
+        log.info(
+                "QuickSort memproses {} data dalam {} ns ({} ms)",
+                filtered.size(),
+                durationNanos,
+                durationMillis
+        );
 
         int start = (int) pageable.getOffset();
-        int end = Math.min(start + pageable.getPageSize(), products.size());
+        int end = Math.min(start + pageable.getPageSize(), filtered.size());
 
-        List<ProductResponse> result = products.subList(start, end).stream().map(this::toResponse).toList();
-        return new PageImpl<>(result, pageable, products.size());
+        List<ProductResponse> result = start >= filtered.size() ? List.of() : filtered.subList(start, end).stream().map(this::toResponse).toList();
+        return new PageImpl<>(result, pageable, filtered.size());
     }
 
     private <T> void quickSort(
@@ -55,6 +74,11 @@ public class ProductService {
     }
 
     private <T> int partition(List<T> list, int low, int high, Comparator<T> comparator){
+        int randomIndex = low + (int) (Math.random() * (high - low + 1));
+        T randomPivot = list.get(randomIndex);
+        list.set(randomIndex, list.get(high));
+        list.set(high, randomPivot);
+
         T pivot = list.get(high);
         int index = low;
 

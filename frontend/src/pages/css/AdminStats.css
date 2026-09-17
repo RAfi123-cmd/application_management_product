@@ -1,9 +1,3 @@
-/* ==========================================================
-   ADMIN STATS — kartu ringkasan Total Pengguna & Total Admin
-   Memakai CSS variable yang sama dengan DashboardLayout
-   (--primary, --ink, dst) karena tetap di dalam .dash-shell
-   ========================================================== */
-
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -182,4 +176,19 @@
   .admin-dashboard-icon {
     display: none;
   }
+}
+
+.stat-card {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card:focus-visible {
+  outline: 2px solid #16a34a;
+  outline-offset: 2px;
 }

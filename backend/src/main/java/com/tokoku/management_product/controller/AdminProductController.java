@@ -16,6 +16,9 @@ import com.tokoku.management_product.dto.response.ProductResponse;
 import com.tokoku.management_product.persistence.service.ProductService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping(ProductConstant.ADMIN_BASE_PATH)
@@ -33,7 +36,11 @@ public class AdminProductController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction) {
+            @RequestParam(defaultValue = "asc") String direction, 
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String name, 
+            @RequestParam(required = false) String category, 
+            @RequestParam(required = false) String status) {
 
         Sort sort = direction.equalsIgnoreCase("desc")
                 ? Sort.by(sortBy).descending()
@@ -41,9 +48,14 @@ public class AdminProductController {
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        return ResponseEntity.ok(productService.getAllProducts(pageable));
+        return ResponseEntity.ok(productService.getAllProducts(pageable, search, name, category, status));
     }
 
+    @GetMapping(ProductConstant.PRODUCT_NAMES)
+    public ResponseEntity<List<String>> getProductNames() {
+        return ResponseEntity.ok(productService.getAllProductNames());
+    }
+    
     @GetMapping(ProductConstant.DETAIL_PRODUCT_ADMIN)
     public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.getProductId(id));

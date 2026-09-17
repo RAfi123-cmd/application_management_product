@@ -21,9 +21,11 @@ import com.tokoku.management_product.dto.request.UpdateUserAccountRequest;
 import com.tokoku.management_product.dto.response.AdminAccountResponse;
 import com.tokoku.management_product.dto.response.DeleteAdminAccountResponse;
 import com.tokoku.management_product.dto.response.DeleteUserResponse;
+import com.tokoku.management_product.dto.response.ProductStatsResponse;
 import com.tokoku.management_product.dto.response.UserAccountResponse;
 import com.tokoku.management_product.dto.response.UserStatsResponse;
 import com.tokoku.management_product.persistence.entity.auth.User;
+import com.tokoku.management_product.persistence.repository.ProductRepository;
 import com.tokoku.management_product.persistence.repository.UserRepository;
 
 
@@ -41,14 +43,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping(UserManagementConstant.BASE_PATH)
 @CrossOrigin(origins = "http://localhost:5173")
 public class UserManagementController {
+    private final ProductRepository productRepository;
+
     private static final String ROLE_ADMIN = "ADMIN";
 
     private UserRepository userRepository;
 
     private PasswordEncoder passwordEncoder;
 
-    public UserManagementController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserManagementController(UserRepository userRepository, ProductRepository productRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.productRepository = productRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -189,6 +194,16 @@ public class UserManagementController {
         return new UserStatsResponse(totalUsers, totalAdmin);
     }
 
+    @GetMapping(UserManagementConstant.PRODUCT_STATS)
+    public ProductStatsResponse getProductStatsResponse() {
+        return new ProductStatsResponse(
+            productRepository.count(),
+            productRepository.countByStatusIgnoreCase("ACTIVE"),
+            productRepository.countByStatusIgnoreCase("DISCONTINUED"),
+            productRepository.countByStatusIgnoreCase("BACKORDERED"));
+    }
+    
+
     private User findUserOrThrow(Long id){
         return userRepository.findById(id).orElseThrow(() -> new DataNotFoundException(UserManagementConstant.USER_NOT_FOUND));
     }
@@ -202,9 +217,6 @@ public class UserManagementController {
         }
     }
 
-    // Sama seperti ensureUsernameAndEmailAvailable, tapi untuk update:
-    // akun yang sedang diedit sendiri tidak boleh dianggap "bentrok"
-    // hanya karena username/email-nya tidak berubah.
     private void ensureUsernameAndEmailAvailableForUpdate(User currentUser, String username, String email) {
         userRepository.findByUsername(username).ifPresent(existing -> {
             if (!existing.getId().equals(currentUser.getId())) {

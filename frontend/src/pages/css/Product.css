@@ -37,10 +37,6 @@
   box-sizing: border-box;
 }
 
-/* ==========================================================================
-   Header
-   ========================================================================== */
-
 .product-header {
   display: flex;
   align-items: flex-start;
@@ -517,4 +513,114 @@
   .modal-actions button {
     width: 100%;
   }
+}
+
+.product-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 14px 16px;
+  border-top: 1px solid #f1f3f5;
+}
+
+.product-pagination-info {
+  font-size: 13px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.pagination-footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 24px;
+  font-size: 13px;
+  color: #4b5563;
+  margin-left: auto;
+}
+
+.pagination-rows-per-page {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.pagination-rows-per-page select {
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #111827;
+  cursor: pointer;
+  padding: 4px 6px;
+}
+
+.pagination-range {
+  white-space: nowrap;
+}
+
+.pagination-arrows {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pagination-arrows button {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  font-size: 16px;
+  color: #374151;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pagination-arrows button:hover:not(:disabled) {
+  background-color: #f3f4f6;
+}
+
+.pagination-arrows button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .product-pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pagination-footer {
+    margin-left: 0;
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .pagination-rows-per-page,
+  .pagination-range {
+    font-size: 12px;
+  }
+}
+
+.stat-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card:focus-visible {
+  outline: 3px solid #198754;
+  outline-offset: 3px;
 }

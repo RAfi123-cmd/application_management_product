@@ -16,6 +16,7 @@ public class ProductConstant {
     public static final String CREATE_PRODUCT_ADMIN = "/add";
     public static final String EDIT_PRODUCT_ADMIN = "/edit/{id}";
     public static final String DELETE_PRODUCT_ADMIN = "/delete/{id}";
+    public static final String PRODUCT_NAMES = "/names";
 
     public static final String NAME_REQUIRED = "Nama produk wajib diisi";
     public static final String PRODUCT_NOT_FOUND = "Produk tidak ditemukan";

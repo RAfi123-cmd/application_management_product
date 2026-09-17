@@ -34,6 +34,13 @@ const initialForm = {
   status: '',
 }
 
+const emptyFilters = {
+  search: '',
+  category: '',
+  productName: '',
+  status: '',
+}
+
 const mapResponseToProduct = (item) => ({
   ...item,
   category: item.catagory,
@@ -55,13 +62,18 @@ export default function ProductPage() {
   const [viewingProduct, setViewingProduct] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [toast, setToast] = useState(null) // { message: string, type: 'success' | 'error' }
+  const [toast, setToast] = useState(null)
 
-  // State pagination, mengikuti bentuk Page dari Spring Data
-  const [page, setPage] = useState(0) // halaman aktif, 0-based
-  const [size] = useState(10) // jumlah baris per halaman
+  // searchForm = apa yang sedang diketik user (belum tentu sudah dicari)
+  // filters    = filter yang benar-benar aktif dipakai untuk fetch data
+  const [searchForm, setSearchForm] = useState(emptyFilters)
+  const [filters, setFilters] = useState(emptyFilters)
+
+  const [page, setPage] = useState(0)
+  const [size, setSize] = useState(10)
   const [totalPages, setTotalPages] = useState(0)
   const [totalElements, setTotalElements] = useState(0)
+  const [productNameOptions, setProductNameOptions] = useState([])
 
   const showToast = (message, type = 'success') => {
     setToast({ message, type })
@@ -73,20 +85,25 @@ export default function ProductPage() {
     return () => clearTimeout(timer)
   }, [toast])
 
-  const loadProducts = useCallback(async (pageToLoad = page) => {
+  // filtersToUse diberikan secara eksplisit (bukan lewat closure) supaya tidak pernah "basi"
+  // walau filters di-update tepat sebelum fungsi ini dipanggil.
+  const loadProducts = useCallback(async (pageToLoad = 0, filtersToUse = emptyFilters, sizeToUse = size) => {
     try {
       setLoading(true)
       setError('')
       const response = await axiosInstance.get(PRODUCT_PATH, {
         params: {
           page: pageToLoad,
-          size,
+          size: sizeToUse,
           sortBy: 'productName',
           direction: 'asc',
+          search: filtersToUse.search || undefined,
+          category: filtersToUse.category || undefined,
+          name: filtersToUse.productName || undefined,
+          status: filtersToUse.status || undefined,
         },
       })
 
-      // response.data berbentuk Page: { content, totalPages, totalElements, number, ... }
       const pageData = response.data
       setProducts((pageData.content || []).map(mapResponseToProduct))
       setTotalPages(pageData.totalPages ?? 0)
@@ -97,19 +114,57 @@ export default function ProductPage() {
     } finally {
       setLoading(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [size])
 
   useEffect(() => {
     startTransition(() => {
-      loadProducts(0)
+      loadProducts(0, emptyFilters)
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  useEffect(() => {
+    const loadProductNames = async () => {
+      try {
+        const response = await axiosInstance.get(`${PRODUCT_PATH}/names`)
+        setProductNameOptions(response.data || [])
+      } catch (err) {
+        setProductNameOptions([])
+      }
+    }
+
+    loadProductNames()
+  }, [])
+
   const goToPage = (targetPage) => {
     if (targetPage < 0 || targetPage >= totalPages || targetPage === page) return
-    loadProducts(targetPage)
+    loadProducts(targetPage, filters, size)
+  }
+
+  const handleRowsPerPageChange = (event) => {
+    const newSize = Number(event.target.value)
+    setSize(newSize)
+    loadProducts(0, filters, newSize)
+  }
+
+  const handleSearchChange = (event) => {
+    const { name, value } = event.target
+    setSearchForm((current) => ({
+      ...current,
+      [name]: value,
+    }))
+  }
+
+  const handleSearchSubmit = (event) => {
+    event.preventDefault()
+    setFilters(searchForm)
+    loadProducts(0, searchForm)
+  }
+
+  const handleResetSearch = () => {
+    setSearchForm(emptyFilters)
+    setFilters(emptyFilters)
+    loadProducts(0, emptyFilters)
   }
 
   const handleChange = (event) => {
@@ -200,7 +255,7 @@ export default function ProductPage() {
       }
 
       closeForm()
-      await loadProducts(page)
+      await loadProducts(page, filters)
     } catch (err) {
       const message = err.response?.data?.message || 'Gagal menyimpan produk'
       setError(message)
@@ -219,7 +274,7 @@ export default function ProductPage() {
 
       // Kalau ini item terakhir di halaman terakhir, mundur satu halaman
       const isLastItemOnPage = products.length === 1 && page > 0
-      await loadProducts(isLastItemOnPage ? page - 1 : page)
+      await loadProducts(isLastItemOnPage ? page - 1 : page, filters)
     } catch (err) {
       const message = err.response?.data?.message || 'Gagal menghapus produk'
       setError(message)
@@ -228,12 +283,14 @@ export default function ProductPage() {
   }
 
   const formatCurrency = (value) =>
-    `Rp ${Number(value || 0).toLocaleString('id-ID')}`
+    `$${Number(value || 0).toLocaleString('id-ID')}`
 
   const statusBadgeClass = (status) => {
     const key = (status || '').toLowerCase()
     return `status-badge status-badge--${key}`
   }
+
+  const isFilterActive = filters.search || filters.category || filters.productName || filters.status
 
   return (
     <section className="product-page">
@@ -253,6 +310,70 @@ export default function ProductPage() {
           + Tambah Produk
         </button>
       </div>
+
+      <form className="product-search-bar" onSubmit={handleSearchSubmit}>
+        <input
+          type="text"
+          name="search"
+          placeholder="Cari semua (nama, kategori, ID, supplier, gudang, status)"
+          value={searchForm.search}
+          onChange={handleSearchChange}
+          className="product-search-input"
+        />
+
+        <select
+          name="productName"
+          value={searchForm.productName}
+          onChange={handleSearchChange}
+          className="product-search-select"
+        >
+          <option value="">Semua Nama Produk</option>
+          {productNameOptions.map((productName) => (
+            <option key={productName} value={productName}>
+              {productName}
+            </option>
+          ))}
+        </select>
+
+        <select
+          name="category"
+          value={searchForm.category}
+          onChange={handleSearchChange}
+          className="product-search-select"
+        >
+          <option value="">Semua Kategori</option>
+          {CATEGORY_OPTIONS.map((category) => (
+            <option key={category} value={category}>
+              {category}
+            </option>
+          ))}
+        </select>
+
+        <select 
+          name="status" 
+          value={searchForm.status} 
+          onChange={handleSearchChange} 
+          className="product-search-select">
+            <option value="">Semua Status</option>
+            {STATUS_OPTIONS.map((status) => (
+              <option key={status} value={status}>{status}</option>
+            ))}
+        </select>
+
+        <button type="submit" className="product-search-button">
+          Cari
+        </button>
+
+        {isFilterActive && (
+          <button
+            type="button"
+            className="product-search-reset"
+            onClick={handleResetSearch}
+          >
+            Reset
+          </button>
+        )}
+      </form>
 
       {error && <div className="product-alert error">{error}</div>}
 
@@ -280,7 +401,9 @@ export default function ProductPage() {
                 {products.length === 0 ? (
                   <tr>
                     <td colSpan="9" className="empty-product">
-                      Belum ada data produk.
+                      {isFilterActive
+                        ? 'Produk tidak ditemukan untuk pencarian ini.'
+                        : 'Belum ada data produk.'}
                     </td>
                   </tr>
                 ) : (
@@ -328,41 +451,45 @@ export default function ProductPage() {
           </div>
         )}
 
-        {!loading && totalPages > 0 && (
+        {!loading && totalElements > 0 && (
           <div className="product-pagination">
             <span className="product-pagination-info">
               Halaman {page + 1} dari {totalPages} ({totalElements} produk)
             </span>
 
-            <div className="product-pagination-controls">
-              <button
-                type="button"
-                onClick={() => goToPage(0)}
-                disabled={page === 0}
-              >
-                « Awal
-              </button>
-              <button
-                type="button"
-                onClick={() => goToPage(page - 1)}
-                disabled={page === 0}
-              >
-                ‹ Sebelumnya
-              </button>
-              <button
-                type="button"
-                onClick={() => goToPage(page + 1)}
-                disabled={page >= totalPages - 1}
-              >
-                Berikutnya ›
-              </button>
-              <button
-                type="button"
-                onClick={() => goToPage(totalPages - 1)}
-                disabled={page >= totalPages - 1}
-              >
-                Akhir »
-              </button>
+            <div className="pagination-footer">
+              <div className="pagination-rows-per-page">
+                <span>Rows per page:</span>
+                <select value={size} onChange={handleRowsPerPageChange}>
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+              </div>
+
+              <span className="pagination-range">
+                {page * size + 1}-{Math.min((page + 1) * size, totalElements)} of {totalElements}
+              </span>
+
+              <div className="pagination-arrows">
+                <button
+                  type="button"
+                  onClick={() => goToPage(page - 1)}
+                  disabled={page === 0}
+                  aria-label="Halaman sebelumnya"
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  onClick={() => goToPage(page + 1)}
+                  disabled={page >= totalPages - 1}
+                  aria-label="Halaman berikutnya"
+                >
+                  ›
+                </button>
+              </div>
             </div>
           </div>
         )}
